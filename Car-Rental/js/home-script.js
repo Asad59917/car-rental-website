@@ -1,6 +1,7 @@
 /**
  * CAR RENTAL - MAIN SCRIPT
  * Combined module for carousel, testimonials, scroll animations, theme, and user authentication
+ * Featured Cars Section - Dynamic from Admin Panel
  */
 
 // ========================================
@@ -114,7 +115,7 @@ function handleSignOut() {
 }
 
 // ========================================
-// CAR DATA
+// CAR DATA - HERO SECTION (HARDCODED)
 // ========================================
 const carsArray = [
     {
@@ -310,6 +311,147 @@ const navNext = document.getElementById('navNext');
 const scrollCard = document.querySelector('.scroll-card');
 const scrollTitle = document.querySelector('.scroll-title');
 const themeToggleButtons = document.querySelectorAll('.theme-toggle');
+
+// ========================================
+// FEATURED CARS - LOAD FROM DATABASE
+// ========================================
+async function loadFeaturedCars() {
+    try {
+        const response = await fetch('/api/cars?featured=true');
+        
+        if (response.ok) {
+            const cars = await response.json();
+            
+            if (cars.length > 0) {
+                renderFeaturedCars(cars);
+                console.log('✅ Featured cars loaded from database:', cars.length);
+            } else {
+                console.log('⚠️ No featured cars in database, using defaults');
+                renderDefaultFeaturedCars();
+            }
+        } else {
+            console.error('❌ Failed to load featured cars');
+            renderDefaultFeaturedCars();
+        }
+    } catch (error) {
+        console.error('❌ Error loading featured cars:', error);
+        renderDefaultFeaturedCars();
+    }
+}
+
+// ========================================
+// FEATURED CARS - RENDER
+// ========================================
+function renderFeaturedCars(cars) {
+    const showcaseContainer = document.querySelector('.cars-showcase');
+    if (!showcaseContainer) return;
+    
+    showcaseContainer.innerHTML = cars.map((car, index) => {
+        // Determine badge
+        let badge = car.badge || 'Featured';
+        if (!car.badge) {
+            if (index === 0) badge = 'Popular';
+            else if (index === 1) badge = 'Luxury';
+            else if (index === 2) badge = 'New';
+        }
+        
+        return `
+            <div class="showcase-card fade-in-up" style="animation-delay: ${0.1 * (index + 1)}s;">
+                <div class="showcase-image">
+                    <img src="${car.image}" alt="${car.brand} ${car.model}">
+                    <div class="showcase-badge">${badge}</div>
+                </div>
+                <div class="showcase-content">
+                    <div class="showcase-header">
+                        <h3>${car.brand} ${car.model}</h3>
+                        <div class="showcase-price">$${car.price}<span>/day</span></div>
+                    </div>
+                    <div class="showcase-specs">
+                        <div class="spec-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            </svg>
+                            <span>${car.horsepower} HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="8" width="18" height="12" rx="2"></rect>
+                            </svg>
+                            <span>${car.seats} Seats</span>
+                        </div>
+                        <div class="spec-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 6v6l4 2"></path>
+                            </svg>
+                            <span>Auto</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="bookCar('${car._id || car.id}')">Book Now</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ========================================
+// FEATURED CARS - DEFAULT FALLBACK
+// ========================================
+function renderDefaultFeaturedCars() {
+    const defaultCars = [
+        {
+            id: 1,
+            brand: 'Ford',
+            model: 'Mustang',
+            price: 250,
+            horsepower: 450,
+            seats: 4,
+            image: 'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
+            badge: 'Popular'
+        },
+        {
+            id: 2,
+            brand: 'Lexus',
+            model: 'LC Series',
+            price: 350,
+            horsepower: 335,
+            seats: 4,
+            image: 'https://www.figma.com/api/mcp/asset/9ad5e5ca-f5dd-43f6-a06b-ba61121fc9d8',
+            badge: 'Luxury'
+        },
+        {
+            id: 3,
+            brand: 'Audi',
+            model: 'A3',
+            price: 180,
+            horsepower: 240,
+            seats: 5,
+            image: 'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
+            badge: 'New'
+        }
+    ];
+    
+    renderFeaturedCars(defaultCars);
+}
+
+// ========================================
+// BOOKING FUNCTIONALITY
+// ========================================
+function bookCar(carId) {
+    const user = localStorage.getItem('user');
+    
+    if (!user) {
+        alert('Please sign in to book a car');
+        window.location.href = '/signin';
+        return;
+    }
+    
+    localStorage.setItem('selectedCar', carId);
+    alert('Booking functionality coming soon!\nSelected Car ID: ' + carId);
+}
+
+// Make bookCar globally available
+window.bookCar = bookCar;
 
 // ========================================
 // CAROUSEL - INITIALIZE
@@ -724,8 +866,11 @@ function init() {
     // Check user authentication
     checkUserAuthentication();
 
-    // Initialize carousel
+    // Initialize carousel (hero section)
     initializeCarousel();
+
+    // Load featured cars from database
+    loadFeaturedCars();
 
     // Initialize testimonials
     updateTestimonial(0);
@@ -739,6 +884,7 @@ function init() {
     console.log('🚗 Car Rental application initialized');
     console.log('🎨 Theme system active');
     console.log('👤 User authentication checked');
+    console.log('⭐ Featured cars loading from database...');
 }
 
 // Run initialization when DOM is ready
@@ -751,3 +897,4 @@ if (document.readyState === 'loading') {
 // Export functions if needed
 window.toggleTheme = toggleTheme;
 window.checkUserAuthentication = checkUserAuthentication;
+window.bookCar = bookCar;

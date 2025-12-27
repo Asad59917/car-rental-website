@@ -28,7 +28,17 @@ mongoose.connect('mongodb://127.0.0.1:27017/carRental')
 
 // Routes
 const users = require('./routes/users');
+const cars = require('./routes/cars');
+const bookings = require('./routes/bookings');
+
 app.use('/users', users);
+app.use('/api/cars', cars);
+app.use('/api/bookings', bookings);
+
+// Serve admin panel
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+});
 
 // Serve car-rental-website.html as the default home page (root /)
 app.get('/', (req, res) => {
@@ -62,6 +72,7 @@ app.get('/', (req, res) => {
                 ${pathsToTry.map(p => `<li>${p}</li>`).join('')}
             </ul>
             <p><a href="/signin">Go to Sign In Page</a></p>
+            <p><a href="/admin">Go to Admin Panel</a></p>
         `);
     }
 });
@@ -191,5 +202,5 @@ app.post('/register', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
-    
+    console.log(`Admin panel available at http://localhost:${port}/admin`);
 });
