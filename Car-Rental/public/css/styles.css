@@ -769,7 +769,7 @@ body {
 }
 
 /* ========================================
-   FEATURED CARS SECTION
+   FEATURED CARS SECTION - UPDATED
    ======================================== */
 .featured-cars-section {
     background: var(--bg-secondary);
@@ -783,36 +783,45 @@ body {
 
 .cars-showcase {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
     margin-top: 3rem;
 }
 
 .showcase-card {
-    background: var(--bg-card);
-    border-radius: 20px;
+    background: var(--bg-secondary);
+    border-radius: 1.5rem;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--border-color);
+    cursor: pointer;
+    padding: 1.5rem;
 }
 
 .showcase-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
     box-shadow: 0 20px 40px var(--shadow-medium);
+    border-color: var(--accent-primary);
 }
 
 .showcase-image {
     position: relative;
     height: 280px;
     overflow: hidden;
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .showcase-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
+    object-fit: contain;
+    padding: 1rem;
+    transition: transform 0.5s ease;
 }
 
 .showcase-card:hover .showcase-image img {
@@ -821,65 +830,120 @@ body {
 
 .showcase-badge {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 1.25rem;
+    right: 1.25rem;
     background: var(--accent-primary);
     color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
     font-weight: 600;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(49, 69, 89, 0.25);
 }
 
 .showcase-content {
-    padding: 2rem;
+    padding: 0;
 }
 
 .showcase-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 1.5rem;
 }
 
 .showcase-header h3 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--text-primary);
+    line-height: 1.2;
 }
 
 .showcase-price {
-    font-size: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.showcase-price-amount {
+    font-size: 2.25rem;
     font-weight: 700;
-    color: var(--accent-primary);
+    color: var(--text-primary);
+    line-height: 1;
 }
 
 .showcase-price span {
     font-size: 1rem;
     font-weight: 400;
-    color: var(--text-secondary);
+    color: var(--text-muted);
+    margin-top: 0.25rem;
 }
 
 .showcase-specs {
     display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    gap: 2rem;
+    margin-bottom: 1.75rem;
+    padding: 0;
+    border: none;
 }
 
 .spec-item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+    flex-direction: row;
+}
+
+.spec-item i {
+    color: var(--text-muted);
+    font-size: 1.125rem;
 }
 
 .spec-item svg {
     width: 18px;
     height: 18px;
-    stroke: var(--accent-primary);
+    stroke: var(--text-muted);
+}
+
+.spec-item .spec-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.showcase-footer {
+    padding: 0;
+}
+
+.btn-showcase {
+    width: 100%;
+    padding: 1.125rem;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: 0.875rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    box-shadow: 0 4px 12px rgba(49, 69, 89, 0.2);
+}
+
+.btn-showcase:hover {
+    background: var(--accent-primary);
+    filter: brightness(0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(49, 69, 89, 0.3);
+}
+
+.btn-showcase i {
+    font-size: 1.125rem;
 }
 
 /* ========================================
@@ -1685,15 +1749,19 @@ body {
 
     .cars-showcase {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
+    }
+
+    .showcase-card {
+        padding: 1.25rem;
     }
 
     .showcase-image {
-        height: 240px;
+        height: 220px;
     }
 
     .showcase-content {
-        padding: 1.5rem;
+        padding: 0;
     }
 
     .showcase-header {
@@ -1702,9 +1770,17 @@ body {
         gap: 0.5rem;
     }
 
+    .showcase-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .showcase-price-amount {
+        font-size: 1.75rem;
+    }
+
     .showcase-specs {
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
     .testimonials-section {
@@ -1992,6 +2068,31 @@ body {
     .back-button svg {
         width: 20px;
         height: 20px;
+    }
+
+    .showcase-image {
+        height: 200px;
+    }
+
+    .showcase-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .showcase-price-amount {
+        font-size: 1.5rem;
+    }
+
+    .showcase-specs {
+        gap: 1rem;
+    }
+
+    .spec-item .spec-value {
+        font-size: 0.9rem;
+    }
+
+    .btn-showcase {
+        padding: 1rem;
+        font-size: 0.95rem;
     }
 }
 
