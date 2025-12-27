@@ -578,6 +578,7 @@ function openCarModal(carId = null) {
             document.getElementById('carStatus').value = car.status;
             document.getElementById('carFeatured').checked = car.featured || false;
             document.getElementById('carBadge').value = car.badge || 'Featured';
+            document.getElementById('carCategory').value = car.category || 'sedan';
         }
     } else {
         // Add mode
@@ -586,6 +587,7 @@ function openCarModal(carId = null) {
         elements.carForm.reset();
         document.getElementById('carFeatured').checked = false;
         document.getElementById('carBadge').value = 'Featured';
+        document.getElementById('carCategory').value = 'sedan';
     }
     
     modal.classList.add('active');
@@ -692,7 +694,8 @@ async function handleCarSubmit(e) {
         image: document.getElementById('carImage').value,
         status: document.getElementById('carStatus').value,
         featured: document.getElementById('carFeatured').checked,
-        badge: document.getElementById('carBadge').value
+        badge: document.getElementById('carBadge').value,
+        category: document.getElementById('carCategory').value
     };
     
     try {

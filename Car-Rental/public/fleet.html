@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Fleet - CARENTAL</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/fleet-css.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="fleet-header">
+        <div class="fleet-header-container">
+            <div class="logo">
+                <a href="/">CARENTAL</a>
+            </div>
+            <nav class="nav">
+                <a href="/">HOME</a>
+                <a href="/fleet.html" class="active">FLEET</a>
+                <a href="#contact">CONTACT US</a>
+                <a href="#bookings">BOOKINGS</a>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button class="btn-signin" id="signinBtn">
+                    <svg class="signin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>SIGN IN</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="fleet-hero">
+        <div class="fleet-hero-overlay"></div>
+        <div class="fleet-hero-content">
+            <h1 class="fleet-hero-title">Our Premium Fleet</h1>
+            <p class="fleet-hero-subtitle">Choose from our collection of luxury and performance vehicles</p>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="fleet-filters-section">
+        <div class="fleet-container">
+            <div class="filters-wrapper">
+                <!-- Category Filters -->
+                <div class="category-filters">
+                    <button class="category-btn active" data-category="all">
+                        <i class="fas fa-border-all"></i>
+                        <span>All Cars</span>
+                        <span class="category-count" id="countAll">0</span>
+                    </button>
+                    <button class="category-btn" data-category="luxury">
+                        <i class="fas fa-gem"></i>
+                        <span>Luxury</span>
+                        <span class="category-count" id="countLuxury">0</span>
+                    </button>
+                    <button class="category-btn" data-category="sports">
+                        <i class="fas fa-flag-checkered"></i>
+                        <span>Sports</span>
+                        <span class="category-count" id="countSports">0</span>
+                    </button>
+                    <button class="category-btn" data-category="suv">
+                        <i class="fas fa-car-side"></i>
+                        <span>SUV</span>
+                        <span class="category-count" id="countSUV">0</span>
+                    </button>
+                    <button class="category-btn" data-category="sedan">
+                        <i class="fas fa-car"></i>
+                        <span>Sedan</span>
+                        <span class="category-count" id="countSedan">0</span>
+                    </button>
+                    <button class="category-btn" data-category="electric">
+                        <i class="fas fa-bolt"></i>
+                        <span>Electric</span>
+                        <span class="category-count" id="countElectric">0</span>
+                    </button>
+                </div>
+
+                <!-- Search & Sort -->
+                <div class="search-sort-wrapper">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="fleetSearch" placeholder="Search by brand or model...">
+                    </div>
+                    <div class="sort-dropdown">
+                        <select id="sortSelect">
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="price-asc">Price (Low to High)</option>
+                            <option value="price-desc">Price (High to Low)</option>
+                            <option value="horsepower-desc">Horsepower (High to Low)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="price-filter">
+                    <label for="priceRange">Price Range: $<span id="priceValue">0</span> - $<span id="maxPriceValue">1000</span>/day</label>
+                    <div class="price-slider-wrapper">
+                        <input type="range" id="minPrice" min="0" max="1000" value="0" step="50">
+                        <input type="range" id="maxPrice" min="0" max="1000" value="1000" step="50">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cars Grid Section -->
+    <section class="fleet-cars-section">
+        <div class="fleet-container">
+            <!-- Results Info -->
+            <div class="results-info">
+                <h2>Available Vehicles (<span id="resultsCount">0</span>)</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading vehicles...</p>
+            </div>
+
+            <!-- Cars Grid -->
+            <div class="fleet-grid" id="fleetGrid">
+                <!-- Cars will be dynamically loaded here -->
+            </div>
+
+            <!-- No Results -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <i class="fas fa-car-crash"></i>
+                <h3>No vehicles found</h3>
+                <p>Try adjusting your filters or search terms</p>
+                <button class="btn-primary" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="fleet-cta-section">
+        <div class="fleet-container">
+            <div class="cta-content">
+                <h2>Can't Find What You're Looking For?</h2>
+                <p>Contact us and we'll help you find the perfect vehicle for your needs</p>
+                <div class="cta-buttons">
+                    <button class="btn-cta-primary">
+                        <i class="fas fa-phone"></i>
+                        Contact Us
+                    </button>
+                    <button class="btn-cta-secondary">
+                        <i class="fas fa-envelope"></i>
+                        Email Inquiry
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3 class="footer-logo">CARENTAL</h3>
+                    <p>Premium car rental service offering the finest selection of luxury vehicles for every occasion.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/fleet.html">Fleet</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#bookings">Bookings</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#terms">Terms & Conditions</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📍 123 Luxury Ave, Dubai</li>
+                        <li>📞 +971 123 456 789</li>
+                        <li>✉️ info@carental.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CARENTAL. All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Car Detail Modal -->
+    <div class="car-modal" id="carModal">
+        <div class="modal-overlay" onclick="closeCarModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCarModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body" id="modalBody">
+                <!-- Car details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/fleet-script.js"></script>
+</body>
+</html>

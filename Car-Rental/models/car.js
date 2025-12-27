@@ -51,6 +51,11 @@ const carSchema = new mongoose.Schema({
         enum: ['Popular', 'Luxury', 'New', 'Featured', 'Premium'],
         default: 'Featured'
     },
+    category: {
+        type: String,
+        enum: ['luxury', 'sports', 'suv', 'sedan', 'electric'],
+        default: 'sedan'
+    },
     features: [{
         type: String
     }],
