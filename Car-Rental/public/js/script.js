@@ -349,3 +349,20 @@ document.querySelector('.terms-checkbox a')?.addEventListener('click', (e) => {
 });
 
 console.log('Authentication system initialized successfully!');
+
+// Force override the bookCar function
+window.bookCar = function(carId) {
+    console.log('🚗 bookCar called with car ID:', carId);
+    
+    const user = localStorage.getItem('user');
+    if (!user) {
+        alert('Please sign in to book a car');
+        window.location.href = '/signin';
+        return;
+    }
+    
+    localStorage.setItem('selectedCar', carId);
+    window.location.href = '/booking.html';
+};
+
+console.log('✅ bookCar function overridden!');

@@ -17,6 +17,7 @@ function checkUserAuthentication() {
         // User is logged in - replace sign in button with user menu
         createUserMenu(user);
     }
+     updateNavigationLinks();
 }
 
 // Create user menu dropdown
@@ -447,7 +448,18 @@ function bookCar(carId) {
     }
     
     localStorage.setItem('selectedCar', carId);
-    alert('Booking functionality coming soon!\nSelected Car ID: ' + carId);
+    window.location.href = '/booking.html';
+}
+
+function updateNavigationLinks() {
+    const user = localStorage.getItem('user');
+    const myBookingsLink = document.getElementById('myBookingsLink');
+    
+    if (user && myBookingsLink) {
+        myBookingsLink.style.display = 'inline-block';
+    } else if (myBookingsLink) {
+        myBookingsLink.style.display = 'none';
+    }
 }
 
 // Make bookCar globally available

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Car - CARENTAL</title>
+    <link rel="stylesheet" href="css/booking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">CARENTAL</div>
+            <div class="nav-links">
+                <a href="/">HOME</a>
+                <a href="/#fleet">FLEET</a>
+                <a href="/contact">CONTACT US</a>
+                <a href="/bookings" class="active">BOOKINGS</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button class="btn-sign-in" onclick="window.location.href='/signin'">
+                    <i class="fas fa-user"></i> SIGN IN
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="booking-main">
+        <!-- Hero Section -->
+        <section class="booking-hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Complete Your Booking</h1>
+                <p class="hero-subtitle">Just a few more details to secure your dream car</p>
+            </div>
+        </section>
+
+        <!-- Booking Form Section -->
+        <section class="booking-section">
+            <div class="booking-container">
+                <!-- Selected Car Card -->
+                <div class="selected-car-card" id="selectedCarCard">
+                    <div class="loading">Loading car details...</div>
+                </div>
+
+                <!-- Booking Form -->
+                <div class="booking-form-card">
+                    <h2 class="form-title">Booking Details</h2>
+                    <form id="bookingForm">
+                        <!-- Personal Information -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-user"></i>
+                                Personal Information
+                            </h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="fullName">Full Name *</label>
+                                    <input type="text" id="fullName" required placeholder="John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" required placeholder="john@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" required placeholder="+971 50 123 4567">
+                                </div>
+                                <div class="form-group">
+                                    <label for="licenseNumber">Driver's License Number *</label>
+                                    <input type="text" id="licenseNumber" required placeholder="123456789">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rental Period -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-calendar-alt"></i>
+                                Rental Period
+                            </h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="startDate">Pick-up Date *</label>
+                                    <input type="date" id="startDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="startTime">Pick-up Time *</label>
+                                    <input type="time" id="startTime" required value="09:00">
+                                </div>
+                                <div class="form-group">
+                                    <label for="endDate">Return Date *</label>
+                                    <input type="date" id="endDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endTime">Return Time *</label>
+                                    <input type="time" id="endTime" required value="18:00">
+                                </div>
+                            </div>
+                            <div class="rental-duration" id="rentalDuration">
+                                <i class="fas fa-clock"></i>
+                                <span>Select dates to see duration</span>
+                            </div>
+                        </div>
+
+                        <!-- Location Details -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Location Details
+                            </h3>
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="pickupLocation">Pick-up Location *</label>
+                                    <select id="pickupLocation" required>
+                                        <option value="">Select Location</option>
+                                        <option value="Dubai Airport">Dubai International Airport</option>
+                                        <option value="Dubai Marina">Dubai Marina</option>
+                                        <option value="Downtown Dubai">Downtown Dubai</option>
+                                        <option value="JBR">Jumeirah Beach Residence (JBR)</option>
+                                        <option value="Business Bay">Business Bay</option>
+                                        <option value="Abu Dhabi">Abu Dhabi City Center</option>
+                                        <option value="Custom">Custom Location</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width" id="customPickupGroup" style="display: none;">
+                                    <label for="customPickup">Enter Custom Pick-up Address</label>
+                                    <input type="text" id="customPickup" placeholder="Enter full address">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="dropoffLocation">Drop-off Location *</label>
+                                    <select id="dropoffLocation" required>
+                                        <option value="">Select Location</option>
+                                        <option value="Same">Same as Pick-up</option>
+                                        <option value="Dubai Airport">Dubai International Airport</option>
+                                        <option value="Dubai Marina">Dubai Marina</option>
+                                        <option value="Downtown Dubai">Downtown Dubai</option>
+                                        <option value="JBR">Jumeirah Beach Residence (JBR)</option>
+                                        <option value="Business Bay">Business Bay</option>
+                                        <option value="Abu Dhabi">Abu Dhabi City Center</option>
+                                        <option value="Custom">Custom Location</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width" id="customDropoffGroup" style="display: none;">
+                                    <label for="customDropoff">Enter Custom Drop-off Address</label>
+                                    <input type="text" id="customDropoff" placeholder="Enter full address">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="address">Residential Address *</label>
+                                    <textarea id="address" required rows="3" placeholder="Enter your full residential address"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Options -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-plus-circle"></i>
+                                Additional Options
+                            </h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="insurance" value="50">
+                                    <span>Full Insurance Coverage (+$50/day)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="gps" value="10">
+                                    <span>GPS Navigation System (+$10/day)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="childSeat" value="15">
+                                    <span>Child Safety Seat (+$15/day)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="driver" value="100">
+                                    <span>Additional Driver (+$100 total)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Special Requests -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-comment"></i>
+                                Special Requests
+                            </h3>
+                            <div class="form-group full-width">
+                                <textarea id="notes" rows="4" placeholder="Any special requests or additional information..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Price Summary -->
+                        <div class="price-summary">
+                            <h3 class="summary-title">Price Summary</h3>
+                            <div class="price-breakdown">
+                                <div class="price-row">
+                                    <span>Base Rental (<span id="daysCount">0</span> days)</span>
+                                    <span id="basePrice">$0</span>
+                                </div>
+                                <div class="price-row" id="addonsRow" style="display: none;">
+                                    <span>Additional Services</span>
+                                    <span id="addonsPrice">$0</span>
+                                </div>
+                                <div class="price-divider"></div>
+                                <div class="price-row total">
+                                    <span>Total Amount</span>
+                                    <span id="totalPrice">$0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="terms-section">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="terms" required>
+                                <span>I agree to the <a href="#" class="terms-link">Terms and Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a></span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-check-circle"></i>
+                            Submit Booking Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+<!-- Success Modal -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <div class="modal-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Booking Request Submitted!</h2>
+        <p>Your booking request has been submitted successfully. Please wait for admin confirmation.</p>
+        <p class="booking-id">Booking ID: <strong id="bookingIdDisplay"></strong></p>
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="window.location.href='/my-bookings.html'">
+                View My Bookings
+            </button>
+            <button class="btn-secondary" onclick="window.location.href='/'">
+                Back to Home
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Error Modal -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content">
+            <div class="modal-icon error">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h2>Booking Failed</h2>
+            <p id="errorMessage">An error occurred while processing your booking.</p>
+            <button class="btn-primary" onclick="closeModal('errorModal')">
+                Try Again
+            </button>
+        </div>
+    </div>
+
+    <script src="js/booking.js"></script>
+</body>
+</html>

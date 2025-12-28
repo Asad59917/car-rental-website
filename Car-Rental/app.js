@@ -77,56 +77,6 @@ app.get('/', (req, res) => {
     }
 });
 
-// Debug route to check paths
-app.get('/debug-paths', (req, res) => {
-    const fs = require('fs');
-    
-    const paths = {
-        '__dirname': __dirname,
-        'current': path.join(__dirname, 'car-rental-website.html'),
-        'parent': path.join(__dirname, '..', 'car-rental-website.html'),
-        'parent2': path.join(__dirname, '..', '..', 'car-rental-website.html'),
-        'currentExists': fs.existsSync(path.join(__dirname, 'car-rental-website.html')),
-        'parentExists': fs.existsSync(path.join(__dirname, '..', 'car-rental-website.html')),
-        'parent2Exists': fs.existsSync(path.join(__dirname, '..', '..', 'car-rental-website.html'))
-    };
-    
-    res.json(paths);
-});
-
-// Serve car-rental-website.html from parent directory
-app.get(['/home', '/car-rental-website.html'], (req, res) => {
-    const fs = require('fs');
-    
-    // Try multiple paths
-    const pathsToTry = [
-        path.join(__dirname, 'car-rental-website.html'),
-        path.join(__dirname, '..', 'car-rental-website.html'),
-        path.join(__dirname, '..', '..', 'car-rental-website.html')
-    ];
-    
-    let foundPath = null;
-    for (const testPath of pathsToTry) {
-        if (fs.existsSync(testPath)) {
-            foundPath = testPath;
-            break;
-        }
-    }
-    
-    if (foundPath) {
-        res.sendFile(foundPath);
-    } else {
-        res.status(404).send(`
-            <h1>File Not Found</h1>
-            <p>Tried the following paths:</p>
-            <ul>
-                ${pathsToTry.map(p => `<li>${p} - ${fs.existsSync(p) ? 'EXISTS' : 'NOT FOUND'}</li>`).join('')}
-            </ul>
-            <p><a href="/debug-paths">View debug info</a></p>
-        `);
-    }
-});
-
 // Serve signin.html for /signin
 app.get('/signin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'signin.html'));
@@ -200,7 +150,18 @@ app.post('/register', async (req, res) => {
     }
 });
 
+// Start server
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-    console.log(`Admin panel available at http://localhost:${port}/admin`);
+    console.log(`✅ Server running on http://localhost:${port}`);
+    console.log(`✅ Admin panel: http://localhost:${port}/admin`);
+    console.log(`✅ MongoDB connected to carRental database`);
+    console.log(`✅ Available routes:`);
+    console.log(`   - GET  /`);
+    console.log(`   - GET  /signin`);
+    console.log(`   - GET  /admin`);
+    console.log(`   - POST /login`);
+    console.log(`   - POST /register`);
+    console.log(`   - API  /users/*`);
+    console.log(`   - API  /api/cars/*`);
+    console.log(`   - API  /api/bookings/*`);
 });

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - CARENTAL</title>
+    <link rel="stylesheet" href="css/booking.css">
+    <link rel="stylesheet" href="css/my-bookings.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">CARENTAL</div>
+            <div class="nav-links">
+                <a href="/">HOME</a>
+                <a href="/#fleet">FLEET</a>
+                <a href="/contact">CONTACT US</a>
+                <a href="/my-bookings" class="active">MY BOOKINGS</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button class="btn-sign-in" onclick="handleSignOut()">
+                    <i class="fas fa-sign-out-alt"></i> SIGN OUT
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="bookings-main">
+        <div class="bookings-container">
+            <div class="page-header">
+                <h1>My Bookings</h1>
+                <p>Track and manage all your car rental bookings</p>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter">
+                        <option value="all">All Bookings</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sortFilter">Sort By</label>
+                    <select id="sortFilter">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="price-low">Price: Low to High</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Bookings List -->
+            <div class="bookings-list" id="bookingsList">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading your bookings...</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-inbox"></i>
+                <h2>No Bookings Found</h2>
+                <p>You haven't made any bookings yet. Start exploring our fleet!</p>
+                <button class="btn-primary" onclick="window.location.href='/'">
+                    Browse Cars
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Booking Details Modal -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content modal-large">
+            <button class="modal-close-btn" onclick="closeModal('detailsModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="bookingDetailsContent"></div>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal" id="cancelModal">
+        <div class="modal-content">
+            <div class="modal-icon error">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2>Cancel Booking?</h2>
+            <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn-danger" id="confirmCancelBtn">
+                    Yes, Cancel Booking
+                </button>
+                <button class="btn-secondary" onclick="closeModal('cancelModal')">
+                    No, Keep Booking
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/my-bookings.js"></script>
+</body>
+</html>

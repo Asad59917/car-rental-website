@@ -506,3 +506,36 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
+
+// ========================================
+// COMPLETE FLEET-SCRIPT.JS UPDATE
+// Add this to the VERY END of your public/js/fleet-script.js file
+// ========================================
+
+// Force override the bookCar function for fleet page
+window.bookCar = function(event, carId) {
+    if (event) event.stopPropagation();
+    
+    console.log('🚗 Fleet bookCar called with ID:', carId);
+    
+    const user = localStorage.getItem('user');
+    
+    if (!user) {
+        alert('Please sign in to book a car');
+        window.location.href = '/signin';
+        return;
+    }
+    
+    localStorage.setItem('selectedCar', carId);
+    console.log('✅ Redirecting to booking page...');
+    window.location.href = '/booking.html';
+};
+
+// Also handle single parameter calls
+if (!window.bookCarSingle) {
+    window.bookCarSingle = function(carId) {
+        window.bookCar(null, carId);
+    };
+}
+
+console.log('✅✅✅ Fleet-script.js updates applied!');
