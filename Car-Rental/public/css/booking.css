@@ -5,8 +5,8 @@
     --primary: #3a4f5f;
     --primary-dark: #2c3d4a;
     --primary-light: #4d6575;
-    --accent: #e85d33;
-    --accent-dark: #d14d25;
+    --accent: #2d3748;
+    --accent-dark: #4a5568;
     
     /* Grayscale */
     --bg-primary: #f5f7fa;
@@ -71,120 +71,51 @@ body {
     transition: background var(--transition-base), color var(--transition-base);
 }
 
-/* ==================== NAVIGATION ==================== */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: var(--bg-secondary);
-    box-shadow: var(--shadow-sm);
-    z-index: 1000;
-    transition: all var(--transition-base);
-}
-
-.nav-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 1.25rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    color: var(--text-primary);
-}
-
-.nav-links {
-    display: flex;
-    gap: 2.5rem;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: var(--text-secondary);
-    font-weight: 500;
-    font-size: 0.9rem;
-    letter-spacing: 0.5px;
-    transition: color var(--transition-fast);
-    position: relative;
-}
-
-.nav-links a::after {
-    content: '';
+/* ==================== BACK BUTTON ==================== */
+.back-button {
     position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--accent);
-    transition: width var(--transition-base);
-}
-
-.nav-links a:hover,
-.nav-links a.active {
-    color: var(--accent);
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
-    width: 100%;
-}
-
-.nav-actions {
-    display: flex;
+    top: 2rem;
+    left: 2rem;
+    z-index: 10;
+    display: inline-flex;
     align-items: center;
-    gap: 1rem;
-}
-
-.theme-toggle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    background: var(--bg-primary);
+    gap: 0.75rem;
+    padding: 0.875rem 1.5rem;
+    background: rgba(255, 255, 255, 0.95);
     color: var(--text-primary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-base);
-}
-
-.theme-toggle:hover {
-    background: var(--primary);
-    color: white;
-    transform: rotate(15deg);
-}
-
-.btn-sign-in {
-    padding: 0.75rem 1.5rem;
-    background: var(--primary);
-    color: white;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: var(--radius-md);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all var(--transition-base);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
 }
 
-.btn-sign-in:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+.back-button:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateX(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.back-button i {
+    font-size: 1.1rem;
+    transition: transform var(--transition-base);
+}
+
+.back-button:hover i {
+    transform: translateX(-2px);
+}
+
+.back-button:active {
+    transform: translateX(-1px);
 }
 
 /* ==================== HERO SECTION ==================== */
 .booking-main {
-    margin-top: 80px;
+    padding-top: 0;
 }
 
 .booking-hero {
@@ -260,7 +191,7 @@ body {
 /* ==================== SELECTED CAR CARD ==================== */
 .selected-car-card {
     position: sticky;
-    top: 100px;
+    top: 2rem;
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
@@ -762,12 +693,19 @@ body {
 }
 
 @media (max-width: 768px) {
-    .nav-container {
-        padding: 1rem;
+    .back-button {
+        top: 1.5rem;
+        left: 1.5rem;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
     }
-    
-    .nav-links {
+
+    .back-button span {
         display: none;
+    }
+
+    .back-button i {
+        font-size: 1.3rem;
     }
     
     .hero-title {
@@ -796,6 +734,18 @@ body {
     
     .modal-actions {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .back-button {
+        top: 1rem;
+        left: 1rem;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
     }
 }
 

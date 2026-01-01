@@ -1,21 +1,55 @@
 /**
- * BOOKING PAGE - COMPLETE INTEGRATION - FIXED
- * Handles car booking form with database integration
+ * BOOKING PAGE - SMART BACK BUTTON
+ * Remembers where user came from (home or fleet)
  */
 
 // ========================================
-// STATE & GLOBAL VARIABLES
+// SMART BACK BUTTON
+// ========================================
+function initBackButton() {
+    const backButton = document.getElementById('backButton');
+    
+    if (backButton) {
+        backButton.addEventListener('click', () => {
+            // Check if there's a referrer stored in sessionStorage
+            const referrer = sessionStorage.getItem('bookingReferrer');
+            
+            if (referrer) {
+                // Go to the stored referrer
+                window.location.href = referrer;
+            } else {
+                // Check document.referrer
+                const docReferrer = document.referrer;
+                
+                if (docReferrer && (docReferrer.includes('/fleet') || docReferrer.includes('fleet.html'))) {
+                    window.location.href = '/fleet.html';
+                } else if (docReferrer) {
+                    window.location.href = docReferrer;
+                } else {
+                    // Default to home
+                    window.location.href = '/';
+                }
+            }
+        });
+    }
+}
+
+// ========================================
+// STATE
 // ========================================
 let selectedCar = null;
 let currentUser = null;
 let totalDays = 0;
-let basePrice = 0;
-let addonsPrice = 0;
+let pricePerDay = 0;
+let addonsTotal = 0;
 
 // ========================================
 // INITIALIZATION
 // ========================================
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize back button
+    initBackButton();
+    
     // Check authentication
     checkAuth();
     
@@ -25,12 +59,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Setup event listeners
     setupEventListeners();
     
-    // Initialize theme
-    initializeTheme();
+    // Set minimum dates
+    setMinimumDates();
 });
 
 // ========================================
-// AUTHENTICATION CHECK
+// AUTHENTICATION
 // ========================================
 function checkAuth() {
     const user = localStorage.getItem('user');
@@ -44,7 +78,7 @@ function checkAuth() {
     try {
         currentUser = JSON.parse(user);
         
-        // Pre-fill user data
+        // Pre-fill form with user data
         document.getElementById('fullName').value = currentUser.name || '';
         document.getElementById('email').value = currentUser.email || '';
     } catch (error) {
@@ -60,8 +94,8 @@ async function loadSelectedCar() {
     const carId = localStorage.getItem('selectedCar');
     
     if (!carId) {
-        alert('No car selected. Please select a car first.');
-        window.location.href = '/';
+        alert('No car selected. Please select a car from the fleet.');
+        window.location.href = '/fleet.html';
         return;
     }
     
@@ -70,31 +104,33 @@ async function loadSelectedCar() {
         
         if (response.ok) {
             selectedCar = await response.json();
-            renderSelectedCar();
+            pricePerDay = selectedCar.price;
+            renderCarCard();
+            calculatePrice();
         } else {
             throw new Error('Car not found');
         }
     } catch (error) {
         console.error('Error loading car:', error);
         alert('Error loading car details. Please try again.');
-        window.location.href = '/';
+        window.location.href = '/fleet.html';
     }
 }
 
 // ========================================
-// RENDER SELECTED CAR
+// RENDER CAR CARD
 // ========================================
-function renderSelectedCar() {
-    const carCard = document.getElementById('selectedCarCard');
+function renderCarCard() {
+    if (!selectedCar) return;
     
-    carCard.innerHTML = `
+    const cardHTML = `
         <div class="car-image-container">
             <img src="${selectedCar.image}" alt="${selectedCar.brand} ${selectedCar.model}">
-            ${selectedCar.badge ? `<div class="car-badge">${selectedCar.badge}</div>` : ''}
+            ${selectedCar.featured ? '<div class="car-badge">Featured</div>' : ''}
         </div>
         <div class="car-details">
             <h3 class="car-name">${selectedCar.brand} ${selectedCar.model}</h3>
-            <p class="car-year">Year: ${selectedCar.year}</p>
+            <p class="car-year">${selectedCar.year || '2024'}</p>
             <div class="car-specs">
                 <div class="car-spec">
                     <i class="fas fa-tachometer-alt"></i>
@@ -104,169 +140,216 @@ function renderSelectedCar() {
                     <i class="fas fa-users"></i>
                     <span>${selectedCar.seats} Seats</span>
                 </div>
+                <div class="car-spec">
+                    <i class="fas fa-cog"></i>
+                    <span>Automatic</span>
+                </div>
+                <div class="car-spec">
+                    <i class="fas fa-gas-pump"></i>
+                    <span>Premium</span>
+                </div>
             </div>
         </div>
         <div class="car-price-display">
             <p class="price-label">Price per day</p>
-            <div class="price-amount">$${selectedCar.price}</div>
-            <span class="price-period">/day</span>
+            <p class="price-amount">$${selectedCar.price}</p>
+            <p class="price-period">/day</p>
         </div>
     `;
+    
+    document.getElementById('selectedCarCard').innerHTML = cardHTML;
+}
+
+// ========================================
+// SET MINIMUM DATES
+// ========================================
+function setMinimumDates() {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const todayStr = today.toISOString().split('T')[0];
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    
+    document.getElementById('startDate').min = todayStr;
+    document.getElementById('endDate').min = tomorrowStr;
+    
+    document.getElementById('startDate').value = todayStr;
+    document.getElementById('endDate').value = tomorrowStr;
 }
 
 // ========================================
 // EVENT LISTENERS
 // ========================================
 function setupEventListeners() {
-    const bookingForm = document.getElementById('bookingForm');
-    const startDate = document.getElementById('startDate');
-    const endDate = document.getElementById('endDate');
-    const pickupLocation = document.getElementById('pickupLocation');
-    const dropoffLocation = document.getElementById('dropoffLocation');
-    
-    // Form submission
-    bookingForm.addEventListener('submit', handleFormSubmit);
-    
     // Date changes
-    startDate.addEventListener('change', calculateDuration);
-    endDate.addEventListener('change', calculateDuration);
+    document.getElementById('startDate').addEventListener('change', handleDateChange);
+    document.getElementById('endDate').addEventListener('change', handleDateChange);
     
-    // Set minimum date to today
-    const today = new Date().toISOString().split('T')[0];
-    startDate.min = today;
-    endDate.min = today;
+    // Location changes
+    document.getElementById('pickupLocation').addEventListener('change', handlePickupLocationChange);
+    document.getElementById('dropoffLocation').addEventListener('change', handleDropoffLocationChange);
     
-    // Location custom field toggles
-    pickupLocation.addEventListener('change', function() {
-        const customGroup = document.getElementById('customPickupGroup');
-        customGroup.style.display = this.value === 'Custom' ? 'block' : 'none';
-    });
-    
-    dropoffLocation.addEventListener('change', function() {
-        const customGroup = document.getElementById('customDropoffGroup');
-        customGroup.style.display = this.value === 'Custom' ? 'block' : 'none';
-    });
-    
-    // Addon checkboxes
-    const addonCheckboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
-    addonCheckboxes.forEach(checkbox => {
+    // Addon changes
+    document.querySelectorAll('input[type="checkbox"]:not(#terms)').forEach(checkbox => {
         checkbox.addEventListener('change', calculatePrice);
     });
+    
+    // Form submission
+    document.getElementById('bookingForm').addEventListener('submit', handleSubmit);
 }
 
 // ========================================
-// CALCULATE DURATION
+// DATE HANDLING
 // ========================================
-function calculateDuration() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    const durationDisplay = document.getElementById('rentalDuration');
+function handleDateChange() {
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
     
-    if (startDate && endDate) {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const diffTime = end - start;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (startDate && endDate && endDate > startDate) {
+        const diffTime = Math.abs(endDate - startDate);
+        totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
-        if (diffDays > 0) {
-            totalDays = diffDays;
-            durationDisplay.innerHTML = `
-                <i class="fas fa-clock"></i>
-                <span>Rental Duration: <strong>${totalDays} day${totalDays > 1 ? 's' : ''}</strong></span>
-            `;
-            durationDisplay.classList.add('active');
-            calculatePrice();
-        } else {
-            durationDisplay.innerHTML = `
-                <i class="fas fa-exclamation-triangle"></i>
-                <span style="color: var(--error);">Return date must be after pickup date</span>
-            `;
-            durationDisplay.classList.remove('active');
-            totalDays = 0;
-        }
+        const durationEl = document.getElementById('rentalDuration');
+        durationEl.innerHTML = `
+            <i class="fas fa-clock"></i>
+            <span>${totalDays} day${totalDays > 1 ? 's' : ''} rental period</span>
+        `;
+        durationEl.classList.add('active');
+        
+        calculatePrice();
     }
 }
 
 // ========================================
-// CALCULATE PRICE
+// LOCATION HANDLING
+// ========================================
+function handlePickupLocationChange() {
+    const value = document.getElementById('pickupLocation').value;
+    const customGroup = document.getElementById('customPickupGroup');
+    
+    if (value === 'Custom') {
+        customGroup.style.display = 'block';
+        document.getElementById('customPickup').required = true;
+    } else {
+        customGroup.style.display = 'none';
+        document.getElementById('customPickup').required = false;
+    }
+}
+
+function handleDropoffLocationChange() {
+    const value = document.getElementById('dropoffLocation').value;
+    const customGroup = document.getElementById('customDropoffGroup');
+    
+    if (value === 'Custom') {
+        customGroup.style.display = 'block';
+        document.getElementById('customDropoff').required = true;
+    } else {
+        customGroup.style.display = 'none';
+        document.getElementById('customDropoff').required = false;
+    }
+}
+
+// ========================================
+// PRICE CALCULATION
 // ========================================
 function calculatePrice() {
-    if (!selectedCar || totalDays === 0) return;
+    if (totalDays === 0) return;
     
-    // Base price
-    basePrice = selectedCar.price * totalDays;
+    // Calculate base price
+    const basePrice = pricePerDay * totalDays;
     
     // Calculate addons
-    addonsPrice = 0;
+    addonsTotal = 0;
+    let addonsText = [];
+    
     const insurance = document.getElementById('insurance');
     const gps = document.getElementById('gps');
     const childSeat = document.getElementById('childSeat');
     const driver = document.getElementById('driver');
     
-    if (insurance && insurance.checked) addonsPrice += parseInt(insurance.value) * totalDays;
-    if (gps && gps.checked) addonsPrice += parseInt(gps.value) * totalDays;
-    if (childSeat && childSeat.checked) addonsPrice += parseInt(childSeat.value) * totalDays;
-    if (driver && driver.checked) addonsPrice += parseInt(driver.value);
+    if (insurance.checked) {
+        const insuranceCost = parseInt(insurance.value) * totalDays;
+        addonsTotal += insuranceCost;
+        addonsText.push(`Insurance: $${insuranceCost}`);
+    }
+    
+    if (gps.checked) {
+        const gpsCost = parseInt(gps.value) * totalDays;
+        addonsTotal += gpsCost;
+        addonsText.push(`GPS: $${gpsCost}`);
+    }
+    
+    if (childSeat.checked) {
+        const seatCost = parseInt(childSeat.value) * totalDays;
+        addonsTotal += seatCost;
+        addonsText.push(`Child Seat: $${seatCost}`);
+    }
+    
+    if (driver.checked) {
+        const driverCost = parseInt(driver.value);
+        addonsTotal += driverCost;
+        addonsText.push(`Additional Driver: $${driverCost}`);
+    }
     
     // Update display
     document.getElementById('daysCount').textContent = totalDays;
     document.getElementById('basePrice').textContent = `$${basePrice}`;
-    document.getElementById('totalPrice').textContent = `$${basePrice + addonsPrice}`;
     
     const addonsRow = document.getElementById('addonsRow');
-    if (addonsPrice > 0) {
+    if (addonsTotal > 0) {
         addonsRow.style.display = 'flex';
-        document.getElementById('addonsPrice').textContent = `$${addonsPrice}`;
+        document.getElementById('addonsPrice').textContent = `$${addonsTotal}`;
     } else {
         addonsRow.style.display = 'none';
     }
+    
+    const totalPrice = basePrice + addonsTotal;
+    document.getElementById('totalPrice').textContent = `$${totalPrice}`;
 }
 
 // ========================================
-// FORM SUBMISSION - FIXED!
+// FORM SUBMISSION
 // ========================================
-async function handleFormSubmit(e) {
+async function handleSubmit(e) {
     e.preventDefault();
     
-    // Validate form
-    if (!validateForm()) {
+    if (!selectedCar || !currentUser) {
+        alert('Missing required information');
         return;
     }
     
-    // Calculate final pricing
-    calculatePrice();
+    // Get form data
+    const pickupLocation = document.getElementById('pickupLocation').value;
+    const dropoffLocation = document.getElementById('dropoffLocation').value;
     
-    // Prepare booking data with ALL required fields
     const bookingData = {
         userId: currentUser.id,
-        carId: selectedCar._id,
-        fullName: document.getElementById('fullName').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        driverLicense: document.getElementById('licenseNumber').value.trim(),
-        pickupLocation: getLocationValue('pickupLocation', 'customPickup'),
-        pickupAddress: getLocationValue('pickupLocation', 'customPickup'),
+        carId: selectedCar._id || selectedCar.id,
+        fullName: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        driverLicense: document.getElementById('licenseNumber').value,
+        pickupLocation: pickupLocation === 'Custom' ? document.getElementById('customPickup').value : pickupLocation,
+        pickupAddress: pickupLocation === 'Custom' ? document.getElementById('customPickup').value : pickupLocation,
         pickupDate: document.getElementById('startDate').value,
         pickupTime: document.getElementById('startTime').value,
-        returnLocation: getLocationValue('dropoffLocation', 'customDropoff'),
-        returnAddress: getLocationValue('dropoffLocation', 'customDropoff') + ', ' + document.getElementById('address').value.trim(),
+        returnLocation: dropoffLocation === 'Custom' ? document.getElementById('customDropoff').value : (dropoffLocation === 'Same' ? pickupLocation : dropoffLocation),
+        returnAddress: dropoffLocation === 'Custom' ? document.getElementById('customDropoff').value : (dropoffLocation === 'Same' ? pickupLocation : dropoffLocation),
         returnDate: document.getElementById('endDate').value,
         returnTime: document.getElementById('endTime').value,
         totalDays: totalDays,
-        pricePerDay: selectedCar.price,
-        totalPrice: basePrice + addonsPrice,
-        specialRequests: document.getElementById('notes').value.trim()
+        pricePerDay: pricePerDay,
+        totalPrice: pricePerDay * totalDays + addonsTotal,
+        specialRequests: document.getElementById('notes').value
     };
     
-    console.log('📦 Submitting booking data:', bookingData);
-    
-    // Show loading state
-    const submitBtn = document.querySelector('.btn-submit');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-    submitBtn.disabled = true;
-    
     try {
+        // Disable submit button
+        const submitBtn = document.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
         const response = await fetch('/api/bookings', {
             method: 'POST',
             headers: {
@@ -275,102 +358,36 @@ async function handleFormSubmit(e) {
             body: JSON.stringify(bookingData)
         });
         
-        const data = await response.json();
-        
         if (response.ok) {
-            console.log('✅ Booking successful:', data);
+            const result = await response.json();
             
             // Show success modal
-            showSuccessModal(data.booking._id);
+            document.getElementById('bookingIdDisplay').textContent = result._id.substring(0, 8).toUpperCase();
+            showModal('successModal');
             
-            // Clear selected car from localStorage
+            // Clear selected car
             localStorage.removeItem('selectedCar');
+            
         } else {
-            throw new Error(data.error || 'Booking failed');
+            throw new Error('Booking failed');
         }
     } catch (error) {
-        console.error('❌ Booking error:', error);
-        showErrorModal(error.message);
+        console.error('Error submitting booking:', error);
+        document.getElementById('errorMessage').textContent = 'An error occurred while processing your booking. Please try again.';
+        showModal('errorModal');
         
-        // Restore button
-        submitBtn.innerHTML = originalText;
+        // Re-enable submit button
+        const submitBtn = document.querySelector('.btn-submit');
         submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Submit Booking Request';
     }
 }
 
 // ========================================
-// VALIDATION
+// MODAL FUNCTIONS
 // ========================================
-function validateForm() {
-    // Check dates
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    
-    if (!startDate || !endDate) {
-        alert('Please select pickup and return dates');
-        return false;
-    }
-    
-    if (totalDays <= 0) {
-        alert('Return date must be after pickup date');
-        return false;
-    }
-    
-    // Check locations
-    const pickupLocation = document.getElementById('pickupLocation').value;
-    const dropoffLocation = document.getElementById('dropoffLocation').value;
-    
-    if (!pickupLocation || !dropoffLocation) {
-        alert('Please select pickup and drop-off locations');
-        return false;
-    }
-    
-    if (pickupLocation === 'Custom' && !document.getElementById('customPickup').value.trim()) {
-        alert('Please enter custom pickup address');
-        return false;
-    }
-    
-    if (dropoffLocation === 'Custom' && !document.getElementById('customDropoff').value.trim()) {
-        alert('Please enter custom drop-off address');
-        return false;
-    }
-    
-    // Check terms
-    if (!document.getElementById('terms').checked) {
-        alert('Please agree to the Terms and Conditions');
-        return false;
-    }
-    
-    return true;
-}
-
-// ========================================
-// HELPER FUNCTIONS
-// ========================================
-function getLocationValue(selectId, customId) {
-    const select = document.getElementById(selectId);
-    const customInput = document.getElementById(customId);
-    
-    if (select.value === 'Custom') {
-        return customInput.value.trim();
-    } else if (select.value === 'Same') {
-        return getLocationValue('pickupLocation', 'customPickup');
-    } else {
-        return select.value;
-    }
-}
-
-function showSuccessModal(bookingId) {
-    const modal = document.getElementById('successModal');
-    document.getElementById('bookingIdDisplay').textContent = bookingId.substring(0, 8).toUpperCase();
-    modal.classList.add('active');
-    
-    console.log('✅ Success modal shown with booking ID:', bookingId);
-}
-
-function showErrorModal(message) {
-    const modal = document.getElementById('errorModal');
-    document.getElementById('errorMessage').textContent = message;
+function showModal(modalId) {
+    const modal = document.getElementById(modalId);
     modal.classList.add('active');
 }
 
@@ -379,28 +396,6 @@ function closeModal(modalId) {
     modal.classList.remove('active');
 }
 
-// Make closeModal global
 window.closeModal = closeModal;
 
-// ========================================
-// THEME TOGGLE
-// ========================================
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    
-    const themeToggle = document.getElementById('themeToggle');
-    themeToggle?.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        
-        // Update icon
-        const icon = themeToggle.querySelector('i');
-        icon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-    });
-}
-
-console.log('🚗 Booking system initialized - FIXED VERSION');
+console.log('📝 Booking page with smart back button initialized');

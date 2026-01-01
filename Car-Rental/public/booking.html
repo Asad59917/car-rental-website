@@ -8,31 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">CARENTAL</div>
-            <div class="nav-links">
-                <a href="/">HOME</a>
-                <a href="/#fleet">FLEET</a>
-                <a href="/contact">CONTACT US</a>
-                <a href="/bookings" class="active">BOOKINGS</a>
-            </div>
-            <div class="nav-actions">
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-sun"></i>
-                </button>
-                <button class="btn-sign-in" onclick="window.location.href='/signin'">
-                    <i class="fas fa-user"></i> SIGN IN
-                </button>
-            </div>
-        </div>
-    </nav>
-
     <!-- Main Content -->
     <main class="booking-main">
         <!-- Hero Section -->
         <section class="booking-hero">
+            <!-- Back Button -->
+            <button class="back-button" id="backButton" aria-label="Go Back">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back</span>
+            </button>
+            
             <div class="hero-overlay"></div>
             <div class="hero-content">
                 <h1 class="hero-title">Complete Your Booking</h1>
@@ -233,26 +218,25 @@
         </section>
     </main>
 
-
-<!-- Success Modal -->
-<div class="modal" id="successModal">
-    <div class="modal-content">
-        <div class="modal-icon success">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h2>Booking Request Submitted!</h2>
-        <p>Your booking request has been submitted successfully. Please wait for admin confirmation.</p>
-        <p class="booking-id">Booking ID: <strong id="bookingIdDisplay"></strong></p>
-        <div class="modal-actions">
-            <button class="btn-primary" onclick="window.location.href='/my-bookings.html'">
-                View My Bookings
-            </button>
-            <button class="btn-secondary" onclick="window.location.href='/'">
-                Back to Home
-            </button>
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Booking Request Submitted!</h2>
+            <p>Your booking request has been submitted successfully. Please wait for admin confirmation.</p>
+            <p class="booking-id">Booking ID: <strong id="bookingIdDisplay"></strong></p>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="window.location.href='/my-bookings.html'">
+                    View My Bookings
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='/'">
+                    Back to Home
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- Error Modal -->
     <div class="modal" id="errorModal">

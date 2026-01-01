@@ -7,6 +7,11 @@
     box-sizing: border-box;
 }
 
+html {
+    width: 100%;
+    overflow-x: hidden;
+}
+
 /* ========================================
    THEME VARIABLES
    ======================================== */
@@ -24,7 +29,7 @@
     --shadow-medium: rgba(0, 0, 0, 0.15);
     --shadow-heavy: rgba(0, 0, 0, 0.3);
     --accent-primary: #314559;
-    --accent-secondary: #78000d;
+    --accent-secondary: #252525;
     --overlay-bg: rgba(255, 255, 255, 0.9);
     --header-bg: rgba(255, 255, 255, 0.85);
     --mobile-menu-bg: #ffffff;
@@ -57,21 +62,20 @@ body {
     overflow-y: auto;
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+    width: 100%;
+    min-width: 320px;
 }
 
 /* ========================================
    MODERN HEADER - FULLY RESPONSIVE
    ======================================== */
 .modern-header {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    background: var(--header-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
+    background: transparent;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -81,7 +85,7 @@ body {
 }
 
 .header-content {
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 1rem 2rem;
     display: flex;
@@ -615,7 +619,6 @@ body {
     position: relative;
     background: var(--bg-primary);
     overflow: visible;
-    margin-top: 76px;
 }
 
 /* ========================================
@@ -1778,8 +1781,56 @@ body {
 }
 
 .footer-theme-toggle {
+    position: relative;
     width: 45px;
     height: 45px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.footer-theme-toggle:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.footer-theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.footer-theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+    transition: all 0.3s ease;
+    position: absolute;
+}
+
+.footer-theme-toggle .sun-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.footer-theme-toggle .moon-icon {
+    opacity: 0;
+    transform: rotate(180deg) scale(0);
+}
+
+[data-theme="dark"] .footer-theme-toggle .sun-icon {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0);
+}
+
+[data-theme="dark"] .footer-theme-toggle .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
 }
 
 .footer-social {
@@ -1885,10 +1936,6 @@ body {
         padding: 0.5rem;
     }
 
-    .container {
-        margin-top: 68px;
-    }
-
     .car-names-container {
         top: 109px;
     }
@@ -1962,11 +2009,6 @@ body {
         width: 40px;
         height: 40px;
         padding: 10px;
-    }
-
-    .container {
-        padding-top: 0;
-        margin-top: 68px;
     }
 
     .car-names-container {
@@ -2155,11 +2197,6 @@ body {
     .mobile-menu-toggle {
         width: 36px;
         height: 36px;
-    }
-
-    .container {
-        margin-top: 64px;
-        padding-top: 0;
     }
 
     .car-names-container {
