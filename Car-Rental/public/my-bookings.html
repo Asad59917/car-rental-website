@@ -4,31 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings - CARENTAL</title>
-    <link rel="stylesheet" href="css/booking.css">
-    <link rel="stylesheet" href="css/my-bookings.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="/public/css/my-bookings.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">CARENTAL</div>
-            <div class="nav-links">
-                <a href="/">HOME</a>
-                <a href="/#fleet">FLEET</a>
-                <a href="/contact">CONTACT US</a>
-                <a href="/my-bookings" class="active">MY BOOKINGS</a>
-            </div>
-            <div class="nav-actions">
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-sun"></i>
+    <!-- Modern Header -->
+    <header class="modern-header">
+        <div class="header-content">
+            <!-- Logo -->
+            <a href="/" class="logo-link">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 17H4a2 2 0 01-2-2V5a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2h-1"></path>
+                        <polygon points="12 15 17 21 7 21 12 15"></polygon>
+                    </svg>
+                    <span class="logo-text">CARENTAL</span>
+                </div>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/fleet.html" class="nav-link">Fleet</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="/my-bookings.html" class="nav-link active">My Bookings</a>
+            </nav>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <!-- Theme Toggle -->
+                <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
                 </button>
-                <button class="btn-sign-in" onclick="handleSignOut()">
-                    <i class="fas fa-sign-out-alt"></i> SIGN OUT
+
+                <!-- User Menu (will be populated by JS) -->
+                <div id="userMenuContainer"></div>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
                 </button>
             </div>
         </div>
-    </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <nav class="mobile-nav" id="mobileNav">
+            <div class="mobile-nav-content">
+                <a href="/" class="mobile-nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    </svg>
+                    <span>Home</span>
+                </a>
+                <a href="/fleet.html" class="mobile-nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>Fleet</span>
+                </a>
+                <a href="#contact" class="mobile-nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>Contact</span>
+                </a>
+                <a href="/my-bookings.html" class="mobile-nav-link active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>My Bookings</span>
+                </a>
+                
+                <div class="mobile-nav-divider"></div>
+                
+                <!-- Mobile user section (will be populated by JS) -->
+                <div id="mobileUserSection"></div>
+            </div>
+        </nav>
+
+        <!-- Mobile Nav Overlay -->
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    </header>
 
     <!-- Main Content -->
     <main class="bookings-main">
@@ -83,6 +168,7 @@
 
     <!-- Booking Details Modal -->
     <div class="modal" id="detailsModal">
+        <div class="modal-overlay" onclick="closeModal('detailsModal')"></div>
         <div class="modal-content modal-large">
             <button class="modal-close-btn" onclick="closeModal('detailsModal')">
                 <i class="fas fa-times"></i>
@@ -93,6 +179,7 @@
 
     <!-- Cancel Confirmation Modal -->
     <div class="modal" id="cancelModal">
+        <div class="modal-overlay" onclick="closeModal('cancelModal')"></div>
         <div class="modal-content">
             <div class="modal-icon error">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -110,6 +197,6 @@
         </div>
     </div>
 
-    <script src="js/my-bookings.js"></script>
+    <script src="/public/js/my-bookings.js"></script>
 </body>
 </html>

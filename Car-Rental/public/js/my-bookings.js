@@ -1,7 +1,82 @@
 /**
- * MY BOOKINGS PAGE
- * User booking management and tracking
+ * MY BOOKINGS PAGE - UPDATED
+ * User booking management and tracking with modern header
  */
+
+// ========================================
+// MOBILE MENU MODULE
+// ========================================
+
+function initMobileMenu() {
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    
+    if (!mobileMenuToggle || !mobileNav || !mobileNavOverlay) return;
+    
+    function toggleMobileMenu() {
+        const isActive = mobileNav.classList.contains('active');
+        
+        if (isActive) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    }
+    
+    function openMobileMenu() {
+        mobileMenuToggle.classList.add('active');
+        mobileNav.classList.add('active');
+        mobileNavOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+        mobileMenuToggle.classList.remove('active');
+        mobileNav.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+    mobileNavOverlay.addEventListener('click', closeMobileMenu);
+    
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeMobileMenu();
+        });
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024 && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+}
+
+// ========================================
+// HEADER SCROLL EFFECT
+// ========================================
+
+function initHeaderScrollEffect() {
+    const header = document.querySelector('.modern-header');
+    if (!header) return;
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 100) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+}
 
 // ========================================
 // STATE
@@ -14,8 +89,17 @@ let filteredBookings = [];
 // INITIALIZATION
 // ========================================
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize mobile menu
+    initMobileMenu();
+    
+    // Initialize header scroll effect
+    initHeaderScrollEffect();
+    
     // Check authentication
     checkAuth();
+    
+    // Initialize user menu
+    initializeUserMenu();
     
     // Load user bookings
     await loadBookings();
@@ -46,6 +130,122 @@ function checkAuth() {
         window.location.href = '/signin';
     }
 }
+
+// ========================================
+// USER MENU
+// ========================================
+function initializeUserMenu() {
+    if (!currentUser) return;
+    
+    const welcomeMessage = localStorage.getItem('hasLoggedInBefore') === 'true' ? 'Welcome back' : 'Welcome';
+    
+    // Desktop user menu
+    const userMenuContainer = document.getElementById('userMenuContainer');
+    if (userMenuContainer) {
+        userMenuContainer.innerHTML = `
+            <div class="user-menu-container">
+                <button class="btn-user-menu" id="userMenuBtn">
+                    <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <div class="user-info">
+                        <span class="user-welcome">${welcomeMessage}</span>
+                        <span class="user-name">${currentUser.name}</span>
+                    </div>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="user-avatar">
+                            ${currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="user-details">
+                            <p class="dropdown-user-name">${currentUser.name}</p>
+                            <p class="dropdown-user-email">${currentUser.email}</p>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="signoutBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        setupUserMenuListeners();
+    }
+    
+    // Mobile user menu
+    const mobileUserSection = document.getElementById('mobileUserSection');
+    if (mobileUserSection) {
+        mobileUserSection.innerHTML = `
+            <div class="mobile-user-section">
+                <div class="mobile-user-info">
+                    <div class="mobile-user-avatar">${currentUser.name.charAt(0).toUpperCase()}</div>
+                    <div>
+                        <p class="mobile-user-name">${currentUser.name}</p>
+                        <p class="mobile-user-email">${currentUser.email}</p>
+                    </div>
+                </div>
+                <button class="mobile-nav-btn" id="mobileSignoutBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+        `;
+        
+        const mobileSignoutBtn = document.getElementById('mobileSignoutBtn');
+        if (mobileSignoutBtn) {
+            mobileSignoutBtn.addEventListener('click', handleSignOut);
+        }
+    }
+}
+
+function setupUserMenuListeners() {
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    const signoutBtn = document.getElementById('signoutBtn');
+    
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('active');
+            }
+        });
+    }
+    
+    if (signoutBtn) {
+        signoutBtn.addEventListener('click', () => {
+            handleSignOut();
+        });
+    }
+}
+
+function handleSignOut() {
+    if (confirm('Are you sure you want to sign out?')) {
+        localStorage.removeItem('user');
+        window.location.href = '/signin';
+    }
+}
+
+window.handleSignOut = handleSignOut;
 
 // ========================================
 // LOAD BOOKINGS
@@ -118,8 +318,8 @@ function renderBookings() {
                             </div>
                         </div>
                         ${booking.adminNotes ? `
-                            <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-primary); border-radius: var(--radius-md); border-left: 3px solid var(--accent);">
-                                <strong style="color: var(--accent);">Admin Notes:</strong>
+                            <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-primary); border-radius: 0.75rem; border-left: 3px solid var(--accent-primary);">
+                                <strong style="color: var(--accent-primary);">Admin Notes:</strong>
                                 <p style="margin-top: 0.5rem; color: var(--text-secondary);">${booking.adminNotes}</p>
                             </div>
                         ` : ''}
@@ -243,14 +443,14 @@ window.viewBookingDetails = function(bookingId) {
         ${booking.specialRequests ? `
             <div class="details-section">
                 <h4><i class="fas fa-comment"></i> Special Requests</h4>
-                <p style="padding: 1rem; background: var(--bg-primary); border-radius: var(--radius-md);">${booking.specialRequests}</p>
+                <p style="padding: 1rem; background: var(--bg-primary); border-radius: 0.75rem;">${booking.specialRequests}</p>
             </div>
         ` : ''}
         
         ${booking.adminNotes ? `
             <div class="details-section">
                 <h4><i class="fas fa-user-shield"></i> Admin Notes</h4>
-                <p style="padding: 1rem; background: var(--bg-primary); border-radius: var(--radius-md); border-left: 3px solid var(--accent);">${booking.adminNotes}</p>
+                <p style="padding: 1rem; background: var(--bg-primary); border-radius: 0.75rem; border-left: 3px solid var(--accent-primary);">${booking.adminNotes}</p>
             </div>
         ` : ''}
         
@@ -262,7 +462,7 @@ window.viewBookingDetails = function(bookingId) {
             </p>
         </div>
         
-        <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+        <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
             <small style="color: var(--text-muted);">
                 Booked on ${formatDate(booking.createdAt)}
             </small>
@@ -383,35 +583,22 @@ function closeModal(modalId) {
 window.closeModal = closeModal;
 
 // ========================================
-// SIGN OUT
-// ========================================
-function handleSignOut() {
-    if (confirm('Are you sure you want to sign out?')) {
-        localStorage.removeItem('user');
-        window.location.href = '/signin';
-    }
-}
-
-window.handleSignOut = handleSignOut;
-
-// ========================================
 // THEME
 // ========================================
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     
-    const themeToggle = document.getElementById('themeToggle');
-    themeToggle?.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        
-        const icon = themeToggle.querySelector('i');
-        icon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    const themeToggles = document.querySelectorAll('.theme-toggle');
+    themeToggles.forEach(toggle => {
+        toggle?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
     });
 }
 
-console.log('📋 My Bookings page initialized');
+console.log('📋 My Bookings page initialized with modern header');

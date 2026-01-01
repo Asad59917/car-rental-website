@@ -1,37 +1,160 @@
 /**
- * CAR RENTAL - MAIN SCRIPT
- * Combined module for carousel, testimonials, scroll animations, theme, and user authentication
- * Featured Cars Section - Dynamic from Admin Panel
+ * CAR RENTAL - MAIN SCRIPT (UPDATED)
+ * Combined module for carousel, testimonials, scroll animations, theme, mobile menu, and user authentication
  */
+
+// ========================================
+// MOBILE MENU MODULE
+// ========================================
+
+function initMobileMenu() {
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    const mobileSigninBtn = document.getElementById('mobileSigninBtn');
+    
+    if (!mobileMenuToggle || !mobileNav || !mobileNavOverlay) return;
+    
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+        const isActive = mobileNav.classList.contains('active');
+        
+        if (isActive) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    }
+    
+    function openMobileMenu() {
+        mobileMenuToggle.classList.add('active');
+        mobileNav.classList.add('active');
+        mobileNavOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+        mobileMenuToggle.classList.remove('active');
+        mobileNav.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Event listeners
+    mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+    mobileNavOverlay.addEventListener('click', closeMobileMenu);
+    
+    // Close menu when clicking nav links
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeMobileMenu();
+        });
+    });
+    
+    // Mobile sign in button
+    if (mobileSigninBtn) {
+        mobileSigninBtn.addEventListener('click', () => {
+            window.location.href = 'public/signin.html';
+        });
+    }
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Close menu on window resize if open
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024 && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+}
+
+// ========================================
+// HEADER SCROLL EFFECT
+// ========================================
+
+function initHeaderScrollEffect() {
+    const header = document.querySelector('.modern-header');
+    if (!header) return;
+    
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 100) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
+}
 
 // ========================================
 // USER AUTHENTICATION MODULE
 // ========================================
 
-// Check if user is logged in
 function checkUserAuthentication() {
     const user = JSON.parse(localStorage.getItem('user'));
     const signinBtn = document.getElementById('signinBtn');
+    const mobileSigninBtn = document.getElementById('mobileSigninBtn');
     
     if (user && signinBtn) {
-        // User is logged in - replace sign in button with user menu
         createUserMenu(user);
     }
-     updateNavigationLinks();
+    
+    // Update mobile sign in button if user is logged in
+    if (user && mobileSigninBtn) {
+        const mobileNavContent = mobileSigninBtn.parentElement;
+        mobileSigninBtn.remove();
+        
+        // Add user info to mobile menu
+        const userMobileSection = document.createElement('div');
+        userMobileSection.className = 'mobile-user-section';
+        userMobileSection.innerHTML = `
+            <div class="mobile-user-info">
+                <div class="mobile-user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                <div>
+                    <p class="mobile-user-name">${user.name}</p>
+                    <p class="mobile-user-email">${user.email}</p>
+                </div>
+            </div>
+            <button class="mobile-nav-btn" id="mobileSignoutBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Sign Out</span>
+            </button>
+        `;
+        mobileNavContent.appendChild(userMobileSection);
+        
+        // Add sign out handler
+        const mobileSignoutBtn = document.getElementById('mobileSignoutBtn');
+        if (mobileSignoutBtn) {
+            mobileSignoutBtn.addEventListener('click', handleSignOut);
+        }
+    }
+    
+    updateNavigationLinks();
 }
 
-// Create user menu dropdown
 function createUserMenu(user) {
     const signinBtn = document.getElementById('signinBtn');
     
-    // Determine if this is a returning user
     const isReturningUser = localStorage.getItem('hasLoggedInBefore') === 'true';
     const welcomeMessage = isReturningUser ? 'Welcome back' : 'Welcome';
     
-    // Mark that user has logged in before
     localStorage.setItem('hasLoggedInBefore', 'true');
     
-    // Create user menu HTML
     const userMenuHTML = `
         <div class="user-menu-container">
             <button class="btn-user-menu" id="userMenuBtn">
@@ -70,27 +193,21 @@ function createUserMenu(user) {
         </div>
     `;
     
-    // Replace signin button with user menu
     signinBtn.outerHTML = userMenuHTML;
-    
-    // Add event listeners
     setupUserMenuListeners();
 }
 
-// Setup user menu event listeners
 function setupUserMenuListeners() {
     const userMenuBtn = document.getElementById('userMenuBtn');
     const userDropdown = document.getElementById('userDropdown');
     const signoutBtn = document.getElementById('signoutBtn');
     
     if (userMenuBtn && userDropdown) {
-        // Toggle dropdown
         userMenuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             userDropdown.classList.toggle('active');
         });
         
-        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
                 userDropdown.classList.remove('active');
@@ -105,13 +222,8 @@ function setupUserMenuListeners() {
     }
 }
 
-// Handle sign out
 function handleSignOut() {
-    // Remove user data from localStorage
     localStorage.removeItem('user');
-    // Note: We keep 'hasLoggedInBefore' so they get "Welcome back" next time
-    
-    // Reload page to reset to sign in button
     window.location.reload();
 }
 
@@ -348,7 +460,6 @@ function renderFeaturedCars(cars) {
     if (!showcaseContainer) return;
     
     showcaseContainer.innerHTML = cars.map((car, index) => {
-        // Determine badge
         let badge = car.badge || 'Featured';
         if (!car.badge) {
             if (index === 0) badge = 'Popular';
@@ -454,15 +565,17 @@ function bookCar(carId) {
 function updateNavigationLinks() {
     const user = localStorage.getItem('user');
     const myBookingsLink = document.getElementById('myBookingsLink');
+    const mobileBookingsLink = document.getElementById('mobileBookingsLink');
     
-    if (user && myBookingsLink) {
-        myBookingsLink.style.display = 'inline-block';
-    } else if (myBookingsLink) {
-        myBookingsLink.style.display = 'none';
+    if (user) {
+        if (myBookingsLink) myBookingsLink.style.display = 'inline-block';
+        if (mobileBookingsLink) mobileBookingsLink.style.display = 'flex';
+    } else {
+        if (myBookingsLink) myBookingsLink.style.display = 'none';
+        if (mobileBookingsLink) mobileBookingsLink.style.display = 'none';
     }
 }
 
-// Make bookCar globally available
 window.bookCar = bookCar;
 
 // ========================================
@@ -875,6 +988,12 @@ function init() {
     const currentTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
 
+    // Initialize mobile menu
+    initMobileMenu();
+
+    // Initialize header scroll effect
+    initHeaderScrollEffect();
+
     // Check user authentication
     checkUserAuthentication();
 
@@ -894,6 +1013,7 @@ function init() {
     setupEventListeners();
 
     console.log('🚗 Car Rental application initialized');
+    console.log('📱 Mobile menu active');
     console.log('🎨 Theme system active');
     console.log('👤 User authentication checked');
     console.log('⭐ Featured cars loading from database...');

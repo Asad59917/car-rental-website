@@ -1,7 +1,95 @@
 /**
- * FLEET PAGE - MAIN SCRIPT
- * Dynamic car loading with filters, search, and categories
+ * FLEET PAGE - MAIN SCRIPT (UPDATED)
+ * Dynamic car loading with filters, search, categories, and mobile menu
  */
+
+// ========================================
+// MOBILE MENU MODULE
+// ========================================
+
+function initMobileMenu() {
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    const mobileSigninBtn = document.getElementById('mobileSigninBtn');
+    
+    if (!mobileMenuToggle || !mobileNav || !mobileNavOverlay) return;
+    
+    function toggleMobileMenu() {
+        const isActive = mobileNav.classList.contains('active');
+        
+        if (isActive) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    }
+    
+    function openMobileMenu() {
+        mobileMenuToggle.classList.add('active');
+        mobileNav.classList.add('active');
+        mobileNavOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+        mobileMenuToggle.classList.remove('active');
+        mobileNav.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+    mobileNavOverlay.addEventListener('click', closeMobileMenu);
+    
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeMobileMenu();
+        });
+    });
+    
+    if (mobileSigninBtn) {
+        mobileSigninBtn.addEventListener('click', () => {
+            window.location.href = '/signin';
+        });
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024 && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+}
+
+// ========================================
+// HEADER SCROLL EFFECT
+// ========================================
+
+function initHeaderScrollEffect() {
+    const header = document.querySelector('.modern-header');
+    if (!header) return;
+    
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 100) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
+}
 
 // ========================================
 // STATE MANAGEMENT
@@ -67,7 +155,6 @@ async function loadCars() {
         if (response.ok) {
             allCars = await response.json();
             
-            // Assign categories to cars if not already set
             allCars = allCars.map(car => {
                 if (!car.category) {
                     car.category = detectCarCategory(car);
@@ -105,7 +192,6 @@ function detectCarCategory(car) {
         }
     }
     
-    // Default category based on price
     if (car.price > 300) return 'luxury';
     if (car.horsepower > 400) return 'sports';
     if (car.seats > 5) return 'suv';
@@ -114,7 +200,7 @@ function detectCarCategory(car) {
 }
 
 // ========================================
-// RENDER CARS - NEW DESIGN
+// RENDER CARS
 // ========================================
 function renderCars() {
     if (filteredCars.length === 0) {
@@ -169,17 +255,14 @@ function renderCars() {
 // ========================================
 function applyFilters() {
     filteredCars = allCars.filter(car => {
-        // Category filter
         if (currentCategory !== 'all' && car.category !== currentCategory) {
             return false;
         }
         
-        // Price filter
         if (car.price < minPriceValue || car.price > maxPriceValue) {
             return false;
         }
         
-        // Search filter
         const searchTerm = elements.fleetSearch.value.toLowerCase();
         if (searchTerm) {
             const searchText = `${car.brand} ${car.model}`.toLowerCase();
@@ -191,9 +274,7 @@ function applyFilters() {
         return true;
     });
     
-    // Apply sorting
     applySorting();
-    
     renderCars();
 }
 
@@ -290,7 +371,6 @@ function resetFilters() {
     applyFilters();
 }
 
-// Make resetFilters global
 window.resetFilters = resetFilters;
 
 // ========================================
@@ -347,7 +427,6 @@ function closeCarModal() {
     modal.classList.remove('active');
 }
 
-// Make modal functions global
 window.openCarModal = openCarModal;
 window.closeCarModal = closeCarModal;
 
@@ -355,7 +434,9 @@ window.closeCarModal = closeCarModal;
 // BOOKING FUNCTION
 // ========================================
 function bookCar(event, carId) {
-    event.stopPropagation();
+    if (event) event.stopPropagation();
+    
+    console.log('🚗 Fleet bookCar called with ID:', carId);
     
     const user = localStorage.getItem('user');
     
@@ -366,10 +447,10 @@ function bookCar(event, carId) {
     }
     
     localStorage.setItem('selectedCar', carId);
-    alert('Booking functionality coming soon!\nSelected Car ID: ' + carId);
+    console.log('✅ Redirecting to booking page...');
+    window.location.href = '/booking.html';
 }
 
-// Make bookCar global
 window.bookCar = bookCar;
 
 // ========================================
@@ -379,12 +460,15 @@ function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     
-    elements.themeToggle?.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
+    const themeToggles = document.querySelectorAll('.theme-toggle');
+    themeToggles.forEach(toggle => {
+        toggle?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
     });
 }
 
@@ -393,13 +477,15 @@ function initializeTheme() {
 // ========================================
 function checkUserAuthentication() {
     const user = JSON.parse(localStorage.getItem('user'));
+    const signinBtn = document.getElementById('signinBtn');
+    const mobileSigninBtn = document.getElementById('mobileSigninBtn');
     
-    if (user && elements.signinBtn) {
+    if (user && signinBtn) {
         const welcomeMessage = localStorage.getItem('hasLoggedInBefore') === 'true' ? 'Welcome back' : 'Welcome';
         
-        elements.signinBtn.outerHTML = `
+        signinBtn.outerHTML = `
             <div class="user-menu-container">
-                <button class="btn-user-menu">
+                <button class="btn-user-menu" id="userMenuBtn">
                     <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
@@ -408,9 +494,111 @@ function checkUserAuthentication() {
                         <span class="user-welcome">${welcomeMessage}</span>
                         <span class="user-name">${user.name}</span>
                     </div>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
                 </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="user-avatar">
+                            ${user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="user-details">
+                            <p class="dropdown-user-name">${user.name}</p>
+                            <p class="dropdown-user-email">${user.email}</p>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="signoutBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
             </div>
         `;
+        
+        setupUserMenuListeners();
+    }
+    
+    if (user && mobileSigninBtn) {
+        const mobileNavContent = mobileSigninBtn.parentElement;
+        mobileSigninBtn.remove();
+        
+        const userMobileSection = document.createElement('div');
+        userMobileSection.className = 'mobile-user-section';
+        userMobileSection.innerHTML = `
+            <div class="mobile-user-info">
+                <div class="mobile-user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                <div>
+                    <p class="mobile-user-name">${user.name}</p>
+                    <p class="mobile-user-email">${user.email}</p>
+                </div>
+            </div>
+            <button class="mobile-nav-btn" id="mobileSignoutBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Sign Out</span>
+            </button>
+        `;
+        mobileNavContent.appendChild(userMobileSection);
+        
+        const mobileSignoutBtn = document.getElementById('mobileSignoutBtn');
+        if (mobileSignoutBtn) {
+            mobileSignoutBtn.addEventListener('click', handleSignOut);
+        }
+    }
+    
+    updateNavigationLinks();
+}
+
+function setupUserMenuListeners() {
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    const signoutBtn = document.getElementById('signoutBtn');
+    
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('active');
+            }
+        });
+    }
+    
+    if (signoutBtn) {
+        signoutBtn.addEventListener('click', () => {
+            handleSignOut();
+        });
+    }
+}
+
+function handleSignOut() {
+    localStorage.removeItem('user');
+    window.location.reload();
+}
+
+function updateNavigationLinks() {
+    const user = localStorage.getItem('user');
+    const myBookingsLink = document.getElementById('myBookingsLink');
+    const mobileBookingsLink = document.getElementById('mobileBookingsLink');
+    
+    if (user) {
+        if (myBookingsLink) myBookingsLink.style.display = 'inline-block';
+        if (mobileBookingsLink) mobileBookingsLink.style.display = 'flex';
+    } else {
+        if (myBookingsLink) myBookingsLink.style.display = 'none';
+        if (mobileBookingsLink) mobileBookingsLink.style.display = 'none';
     }
 }
 
@@ -418,7 +606,6 @@ function checkUserAuthentication() {
 // EVENT LISTENERS
 // ========================================
 function setupEventListeners() {
-    // Category buttons
     elements.categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             currentCategory = btn.dataset.category;
@@ -430,13 +617,9 @@ function setupEventListeners() {
         });
     });
     
-    // Search
     elements.fleetSearch?.addEventListener('input', applyFilters);
-    
-    // Sort
     elements.sortSelect?.addEventListener('change', applyFilters);
     
-    // Price sliders
     elements.minPrice?.addEventListener('input', (e) => {
         minPriceValue = parseInt(e.target.value);
         elements.priceValue.textContent = minPriceValue;
@@ -463,7 +646,6 @@ function setupEventListeners() {
         applyFilters();
     });
     
-    // View toggle
     elements.viewBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             currentView = btn.dataset.view;
@@ -475,12 +657,10 @@ function setupEventListeners() {
         });
     });
     
-    // Sign in button
     elements.signinBtn?.addEventListener('click', () => {
         window.location.href = '/signin';
     });
     
-    // Close modal on escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeCarModal();
@@ -492,50 +672,20 @@ function setupEventListeners() {
 // INITIALIZATION
 // ========================================
 async function init() {
+    initMobileMenu();
+    initHeaderScrollEffect();
     initializeTheme();
     checkUserAuthentication();
     setupEventListeners();
     await loadCars();
     
-    console.log('🚗 Fleet page initialized with new card design');
+    console.log('🚗 Fleet page initialized with modern header');
 }
 
-// Run initialization
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
 }
 
-// ========================================
-// COMPLETE FLEET-SCRIPT.JS UPDATE
-// Add this to the VERY END of your public/js/fleet-script.js file
-// ========================================
-
-// Force override the bookCar function for fleet page
-window.bookCar = function(event, carId) {
-    if (event) event.stopPropagation();
-    
-    console.log('🚗 Fleet bookCar called with ID:', carId);
-    
-    const user = localStorage.getItem('user');
-    
-    if (!user) {
-        alert('Please sign in to book a car');
-        window.location.href = '/signin';
-        return;
-    }
-    
-    localStorage.setItem('selectedCar', carId);
-    console.log('✅ Redirecting to booking page...');
-    window.location.href = '/booking.html';
-};
-
-// Also handle single parameter calls
-if (!window.bookCarSingle) {
-    window.bookCarSingle = function(carId) {
-        window.bookCar(null, carId);
-    };
-}
-
-console.log('✅✅✅ Fleet-script.js updates applied!');
+console.log('✅ Fleet-script.js updates applied!');
