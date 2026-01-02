@@ -1,4 +1,4 @@
-// Contact Page JavaScript
+// Contact Page JavaScript - UPDATED WITH API INTEGRATION
 
 // ========================================
 // MOBILE MENU MODULE
@@ -238,10 +238,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Form Submission Handler
+// ========================================
+// FORM SUBMISSION HANDLER - UPDATED
+// ========================================
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', function(e) {
+contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     // Get form data
@@ -253,72 +255,115 @@ contactForm.addEventListener('submit', function(e) {
         return;
     }
     
-    // Simulate form submission (replace with actual API call)
-    submitForm(data);
+    // Submit form to API
+    await submitForm(data);
 });
 
 function validateForm(data) {
     // Basic validation
     if (!data.firstName || !data.lastName || !data.email || !data.subject || !data.message) {
-        alert('Please fill in all required fields');
+        showNotification('Please fill in all required fields', 'error');
         return false;
     }
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
-        alert('Please enter a valid email address');
+        showNotification('Please enter a valid email address', 'error');
         return false;
     }
     
     return true;
 }
 
-function submitForm(data) {
+async function submitForm(data) {
     // Show loading state
     const submitBtn = contactForm.querySelector('.btn-submit');
     const originalBtnText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     submitBtn.disabled = true;
     
-    // Simulate API call
-    setTimeout(() => {
-        console.log('Form submitted:', data);
-        
-        // Reset form
-        contactForm.reset();
-        
-        // Reset button
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
-        
-        // Show success modal
-        showSuccessModal();
-        
-        // In a real application, you would make an API call here:
-        /*
-        fetch('/api/contact', {
+    try {
+        const response = await fetch('/api/contact', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(result => {
-            contactForm.reset();
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            showSuccessModal();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            alert('An error occurred. Please try again later.');
         });
-        */
-    }, 1500);
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            console.log('✅ Form submitted successfully:', result);
+            
+            // Reset form
+            contactForm.reset();
+            
+            // Show success modal
+            showSuccessModal();
+            
+            showNotification('Message sent successfully!', 'success');
+        } else {
+            console.error('❌ Form submission failed:', result);
+            showNotification(result.error || 'An error occurred. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('❌ Network error:', error);
+        showNotification('Network error. Please check your connection and try again.', 'error');
+    } finally {
+        // Reset button state
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.toast-notification');
+    existingNotifications.forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `toast-notification toast-${type}`;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle',
+        warning: 'fa-exclamation-triangle'
+    };
+    
+    notification.innerHTML = `
+        <i class="fas ${icons[type] || icons.info}"></i>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: slideIn 0.3s ease;
+        max-width: 400px;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
 }
 
 function showSuccessModal() {
@@ -336,9 +381,12 @@ function closeModal() {
 // Close modal when clicking overlay
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('successModal');
-    const overlay = modal.querySelector('.modal-overlay');
-    
-    overlay.addEventListener('click', closeModal);
+    if (modal) {
+        const overlay = modal.querySelector('.modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', closeModal);
+        }
+    }
 });
 
 // Close modal with Escape key
@@ -371,4 +419,4 @@ if (document.readyState === 'loading') {
     init();
 }
 
-console.log('✅ Contact page initialized with modern header');
+console.log('✅ Contact page initialized with API integration');

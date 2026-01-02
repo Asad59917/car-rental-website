@@ -1,6 +1,6 @@
 // ========================================
 // ADMIN DASHBOARD - COMPLETE UPDATED VERSION
-// With Image Upload Support
+// With Image Upload Support + Contact Notifications
 // ========================================
 
 // ========================================
@@ -11,9 +11,12 @@ const state = {
     users: [],
     cars: [],
     bookings: [],
+    contactMessages: [],
+    unreadContactCount: 0,
     currentUser: null,
     currentCar: null,
     currentBooking: null,
+    currentContactMessage: null,
     uploadedImageFile: null
 };
 
@@ -29,6 +32,8 @@ const elements = {
     pageTitle: document.getElementById('pageTitle'),
     themeToggle: document.getElementById('themeToggle'),
     logoutBtn: document.getElementById('logoutBtn'),
+    notificationBtn: document.querySelector('.notification-btn'),
+    notificationBadge: document.querySelector('.notification-btn .badge'),
     userModal: document.getElementById('userModal'),
     carModal: document.getElementById('carModal'),
     bookingModal: document.getElementById('bookingModal'),
@@ -53,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDashboardData();
     checkAuthStatus();
     initializeTheme();
+    startNotificationPolling();
     console.log('✅ Admin Dashboard Initialized Successfully');
 });
 
@@ -84,6 +90,11 @@ function initializeEventListeners() {
     // Logout
     if (elements.logoutBtn) {
         elements.logoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    // Notification button
+    if (elements.notificationBtn) {
+        elements.notificationBtn.addEventListener('click', openNotificationPanel);
     }
     
     // Modal close buttons
@@ -160,11 +171,345 @@ function initializeEventListeners() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeAllModals();
+            closeNotificationPanel();
         }
     });
     
     console.log('✅ Event listeners configured');
 }
+
+// ========================================
+// CONTACT NOTIFICATION SYSTEM
+// ========================================
+async function loadContactMessages() {
+    try {
+        const response = await fetch('/api/contact');
+        if (response.ok) {
+            state.contactMessages = await response.json();
+            updateNotificationBadge();
+            console.log('✅ Loaded', state.contactMessages.length, 'contact messages');
+        }
+    } catch (error) {
+        console.error('❌ Error loading contact messages:', error);
+    }
+}
+
+async function updateNotificationBadge() {
+    try {
+        const response = await fetch('/api/contact/unread-count');
+        if (response.ok) {
+            const { count } = await response.json();
+            state.unreadContactCount = count;
+            
+            if (elements.notificationBadge) {
+                if (count > 0) {
+                    elements.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    elements.notificationBadge.style.display = 'block';
+                } else {
+                    elements.notificationBadge.style.display = 'none';
+                }
+            }
+        }
+    } catch (error) {
+        console.error('❌ Error updating notification badge:', error);
+    }
+}
+
+function startNotificationPolling() {
+    // Check for new notifications every 30 seconds
+    updateNotificationBadge();
+    setInterval(updateNotificationBadge, 30000);
+}
+
+function openNotificationPanel() {
+    // Remove any existing panel
+    const existingPanel = document.getElementById('notificationPanel');
+    if (existingPanel) {
+        existingPanel.remove();
+        return;
+    }
+    
+    // Load latest messages
+    loadContactMessages().then(() => {
+        const panel = document.createElement('div');
+        panel.id = 'notificationPanel';
+        panel.className = 'notification-panel';
+        
+        const unreadMessages = state.contactMessages.filter(m => m.status === 'unread');
+        
+        panel.innerHTML = `
+            <div class="notification-panel-header">
+                <h3><i class="fas fa-bell"></i> Contact Messages</h3>
+                <button class="panel-close-btn" onclick="closeNotificationPanel()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="notification-panel-tabs">
+                <button class="notification-tab active" data-tab="unread">
+                    Unread (${unreadMessages.length})
+                </button>
+                <button class="notification-tab" data-tab="all">
+                    All Messages
+                </button>
+            </div>
+            <div class="notification-panel-content">
+                <div class="notification-tab-content active" id="unread-tab">
+                    ${unreadMessages.length > 0 ? unreadMessages.map(msg => createNotificationCard(msg)).join('') : '<div class="no-notifications"><i class="fas fa-check-circle"></i><p>No unread messages</p></div>'}
+                </div>
+                <div class="notification-tab-content" id="all-tab">
+                    ${state.contactMessages.length > 0 ? state.contactMessages.map(msg => createNotificationCard(msg)).join('') : '<div class="no-notifications"><i class="fas fa-inbox"></i><p>No messages yet</p></div>'}
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(panel);
+        
+        // Tab switching
+        panel.querySelectorAll('.notification-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                panel.querySelectorAll('.notification-tab').forEach(t => t.classList.remove('active'));
+                panel.querySelectorAll('.notification-tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const tabName = tab.dataset.tab;
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+        
+        // Close when clicking outside
+        setTimeout(() => {
+            document.addEventListener('click', handleOutsideClick);
+        }, 100);
+    });
+}
+
+function handleOutsideClick(e) {
+    const panel = document.getElementById('notificationPanel');
+    const notificationBtn = elements.notificationBtn;
+    
+    if (panel && !panel.contains(e.target) && !notificationBtn.contains(e.target)) {
+        closeNotificationPanel();
+    }
+}
+
+function closeNotificationPanel() {
+    const panel = document.getElementById('notificationPanel');
+    if (panel) {
+        panel.remove();
+    }
+    document.removeEventListener('click', handleOutsideClick);
+}
+
+window.closeNotificationPanel = closeNotificationPanel;
+
+function createNotificationCard(message) {
+    const timeAgo = getTimeAgo(new Date(message.createdAt));
+    const statusClass = message.status === 'unread' ? 'unread' : message.status === 'read' ? 'read' : 'replied';
+    
+    return `
+        <div class="notification-card ${statusClass}" onclick="viewContactMessage('${message._id}')">
+            <div class="notification-card-header">
+                <div class="notification-user">
+                    <div class="notification-avatar">${message.firstName.charAt(0)}${message.lastName.charAt(0)}</div>
+                    <div>
+                        <div class="notification-name">${message.firstName} ${message.lastName}</div>
+                        <div class="notification-email">${message.email}</div>
+                    </div>
+                </div>
+                <div class="notification-time">${timeAgo}</div>
+            </div>
+            <div class="notification-card-body">
+                <div class="notification-subject">
+                    <span class="subject-badge ${message.subject}">${message.subject}</span>
+                </div>
+                <div class="notification-message">${message.message.substring(0, 100)}${message.message.length > 100 ? '...' : ''}</div>
+            </div>
+            ${message.status === 'unread' ? '<div class="unread-indicator"></div>' : ''}
+        </div>
+    `;
+}
+
+function getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + ' years ago';
+    
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + ' months ago';
+    
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + ' days ago';
+    
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + ' hours ago';
+    
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + ' minutes ago';
+    
+    return 'Just now';
+}
+
+async function viewContactMessage(messageId) {
+    try {
+        const response = await fetch(`/api/contact/${messageId}`);
+        if (!response.ok) {
+            showNotification('Message not found', 'error');
+            return;
+        }
+        
+        const message = await response.json();
+        
+        // Mark as read if unread
+        if (message.status === 'unread') {
+            await fetch(`/api/contact/${messageId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'read' })
+            });
+            
+            // Update badge
+            updateNotificationBadge();
+        }
+        
+        // Close notification panel
+        closeNotificationPanel();
+        
+        // Show message details modal
+        showContactMessageModal(message);
+        
+    } catch (error) {
+        console.error('Error viewing message:', error);
+        showNotification('Error loading message', 'error');
+    }
+}
+
+window.viewContactMessage = viewContactMessage;
+
+function showContactMessageModal(message) {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'contactMessageModal';
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-envelope"></i> Contact Message</h2>
+                <button class="modal-close" onclick="closeContactMessageModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <div style="background: var(--admin-bg-tertiary); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="notification-avatar" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            ${message.firstName.charAt(0)}${message.lastName.charAt(0)}
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; color: var(--admin-text-primary);">${message.firstName} ${message.lastName}</h3>
+                            <p style="margin: 0.25rem 0 0; color: var(--admin-text-muted);">${message.email}</p>
+                            ${message.phone ? `<p style="margin: 0.25rem 0 0; color: var(--admin-text-muted);"><i class="fas fa-phone"></i> ${message.phone}</p>` : ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <span class="subject-badge ${message.subject}">${message.subject}</span>
+                        <span class="status-badge ${message.status}">${message.status}</span>
+                        <span style="color: var(--admin-text-muted); font-size: 0.875rem;">
+                            <i class="fas fa-clock"></i> ${new Date(message.createdAt).toLocaleString()}
+                        </span>
+                    </div>
+                </div>
+                
+                <div style="background: var(--admin-bg-secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 1rem; color: var(--admin-text-primary);">Message:</h4>
+                    <p style="color: var(--admin-text-secondary); line-height: 1.8; white-space: pre-wrap;">${message.message}</p>
+                </div>
+                
+                ${message.adminNotes ? `
+                    <div style="background: #fff3cd; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                        <h4 style="margin: 0 0 1rem; color: #856404;"><i class="fas fa-sticky-note"></i> Admin Notes:</h4>
+                        <p style="color: #856404; line-height: 1.6;">${message.adminNotes}</p>
+                    </div>
+                ` : ''}
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; flex-wrap: wrap;">
+                    ${message.status !== 'replied' ? `
+                        <button class="btn-primary" onclick="markAsReplied('${message._id}')">
+                            <i class="fas fa-reply"></i> Mark as Replied
+                        </button>
+                    ` : ''}
+                    <button class="btn-danger" onclick="deleteContactMessage('${message._id}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeContactMessageModal();
+        }
+    });
+}
+
+window.closeContactMessageModal = function() {
+    const modal = document.getElementById('contactMessageModal');
+    if (modal) {
+        modal.remove();
+    }
+};
+
+window.markAsReplied = async function(messageId) {
+    const notes = prompt('Add admin notes (optional):');
+    
+    try {
+        const response = await fetch(`/api/contact/${messageId}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                status: 'replied',
+                adminNotes: notes || 'Replied to customer'
+            })
+        });
+        
+        if (response.ok) {
+            showNotification('Message marked as replied', 'success');
+            closeContactMessageModal();
+            updateNotificationBadge();
+            loadContactMessages();
+        } else {
+            showNotification('Error updating message', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Network error', 'error');
+    }
+};
+
+window.deleteContactMessage = async function(messageId) {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+    
+    try {
+        const response = await fetch(`/api/contact/${messageId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showNotification('Message deleted successfully', 'success');
+            closeContactMessageModal();
+            updateNotificationBadge();
+            loadContactMessages();
+        } else {
+            showNotification('Error deleting message', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Network error', 'error');
+    }
+};
 
 // ========================================
 // IMAGE UPLOAD FUNCTIONS
@@ -505,6 +850,11 @@ REVENUE
 -------
 Total Revenue (Confirmed & Completed): $${totalRevenue.toLocaleString()}
 
+CONTACT MESSAGES
+---------------
+Total Messages: ${state.contactMessages.length}
+Unread: ${state.unreadContactCount}
+
 =====================================
 End of Report
     `;
@@ -651,7 +1001,8 @@ async function loadDashboardData() {
         await Promise.all([
             loadUsers(),
             loadCars(),
-            loadBookings()
+            loadBookings(),
+            loadContactMessages()
         ]);
         
         updateDashboardStats();
@@ -728,6 +1079,8 @@ function updateDashboardStats() {
         elements.totalBookings.textContent = state.bookings.length;
     }
 }
+
+// Continuing admin-script.js (Part 2)...
 
 // ========================================
 // USERS TABLE RENDERING
@@ -1441,7 +1794,7 @@ window.viewBookingDetails = function(bookingId) {
                 </div>
                 
                 ${booking.status === 'pending' ? `
-                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                         <button class="btn-success" onclick="confirmBooking('${booking._id}'); closeBookingDetailsModal();" style="padding: 1rem 2rem; font-size: 1rem;">
                             <i class="fas fa-check"></i> Confirm Booking
                         </button>
@@ -1740,7 +2093,8 @@ console.log('📊 Features Active:');
 console.log('   - User Management');
 console.log('   - Car Management (with Image Upload)');
 console.log('   - Booking Management (Confirm/Reject/View/Delete)');
+console.log('   - Contact Notifications (Real-time with Badge)');
 console.log('   - Dashboard Stats');
-console.log('   - Quick Actions (Add User, Add Car, View Bookings, Generate Report)');
+console.log('   - Quick Actions');
 console.log('   - Theme Toggle');
 console.log('   - Responsive Sidebar');
