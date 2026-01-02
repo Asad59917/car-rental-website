@@ -3,12 +3,59 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
 const User = require('./models/user');
 
 const app = express();
 const port = 1010;
 
-// Middleware
+// ========================================
+// MULTER CONFIGURATION FOR IMAGE UPLOADS
+// ========================================
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'public', 'uploads', 'cars');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('✅ Created uploads directory:', uploadsDir);
+}
+
+// Configure multer storage
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+        // Generate unique filename
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, 'car-' + uniqueSuffix + ext);
+    }
+});
+
+// File filter to accept only images
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.'), false);
+    }
+};
+
+// Configure multer
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+});
+
+// ========================================
+// MIDDLEWARE
+// ========================================
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -21,12 +68,19 @@ app.use(express.static(path.join(__dirname, '..')));
 // Also serve from current directory
 app.use(express.static(__dirname));
 
-// MongoDB connection
+// Serve uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
+// ========================================
+// MONGODB CONNECTION
+// ========================================
 mongoose.connect('mongodb://127.0.0.1:27017/carRental')
     .then(() => console.log('MongoDB connected successfully'))
     .catch(err => console.log('MongoDB connection error:', err));
 
-// Routes
+// ========================================
+// ROUTES
+// ========================================
 const users = require('./routes/users');
 const cars = require('./routes/cars');
 const bookings = require('./routes/bookings');
@@ -35,6 +89,51 @@ app.use('/users', users);
 app.use('/api/cars', cars);
 app.use('/api/bookings', bookings);
 
+// ========================================
+// IMAGE UPLOAD ENDPOINT
+// ========================================
+app.post('/api/upload', upload.single('image'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        
+        // Generate the URL for the uploaded image
+        const imageUrl = `/uploads/cars/${req.file.filename}`;
+        
+        console.log('✅ Image uploaded successfully:', imageUrl);
+        
+        res.json({
+            message: 'Image uploaded successfully',
+            imageUrl: imageUrl,
+            filename: req.file.filename,
+            originalName: req.file.originalname,
+            size: req.file.size
+        });
+    } catch (error) {
+        console.error('❌ Upload error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Handle multer errors
+app.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ error: 'File size too large. Maximum is 5MB.' });
+        }
+        return res.status(400).json({ error: error.message });
+    }
+    if (error) {
+        return res.status(400).json({ error: error.message });
+    }
+    next();
+});
+
+// ========================================
+// PAGE ROUTES
+// ========================================
+
 // Serve admin panel
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
@@ -42,8 +141,6 @@ app.get('/admin', (req, res) => {
 
 // Serve car-rental-website.html as the default home page (root /)
 app.get('/', (req, res) => {
-    const fs = require('fs');
-    
     // Try multiple paths to find the file
     const pathsToTry = [
         path.join(__dirname, 'car-rental-website.html'),
@@ -81,6 +178,10 @@ app.get('/', (req, res) => {
 app.get('/signin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'signin.html'));
 });
+
+// ========================================
+// AUTHENTICATION ROUTES
+// ========================================
 
 // Login route with password hashing verification
 app.post('/login', async (req, res) => {
@@ -150,17 +251,21 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Start server
+// ========================================
+// START SERVER
+// ========================================
 app.listen(port, () => {
     console.log(`✅ Server running on http://localhost:${port}`);
     console.log(`✅ Admin panel: http://localhost:${port}/admin`);
     console.log(`✅ MongoDB connected to carRental database`);
+    console.log(`✅ Image uploads directory: ${uploadsDir}`);
     console.log(`✅ Available routes:`);
     console.log(`   - GET  /`);
     console.log(`   - GET  /signin`);
     console.log(`   - GET  /admin`);
     console.log(`   - POST /login`);
     console.log(`   - POST /register`);
+    console.log(`   - POST /api/upload (Image upload)`);
     console.log(`   - API  /users/*`);
     console.log(`   - API  /api/cars/*`);
     console.log(`   - API  /api/bookings/*`);

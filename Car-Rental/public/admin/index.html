@@ -427,91 +427,127 @@
         </div>
     </div>
 
-    <!-- Add/Edit Car Modal -->
-    <div class="modal" id="carModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="carModalTitle">Add New Car</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <form id="carForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Brand *</label>
-                        <input type="text" id="carBrand" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Model *</label>
-                        <input type="text" id="carModel" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Year *</label>
-                        <input type="number" id="carYear" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Price per Day ($) *</label>
-                        <input type="number" id="carPrice" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Seats *</label>
-                        <input type="number" id="carSeats" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Horsepower *</label>
-                        <input type="number" id="carHorsepower" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Image URL *</label>
-                    <input type="url" id="carImage" required>
-                </div>
-                <div class="form-group">
-                    <label>Status *</label>
-                    <select id="carStatus" required>
-                        <option value="available">Available</option>
-                        <option value="rented">Rented</option>
-                        <option value="maintenance">Maintenance</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" id="carFeatured" style="width: auto; cursor: pointer;">
-                            <span>Featured on Homepage</span>
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label>Badge (if featured)</label>
-                        <select id="carBadge">
-                            <option value="Featured">Featured</option>
-                            <option value="Popular">Popular</option>
-                            <option value="Luxury">Luxury</option>
-                            <option value="New">New</option>
-                            <option value="Premium">Premium</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Category *</label>
-                    <select id="carCategory" required>
-                        <option value="sedan">Sedan</option>
-                        <option value="suv">SUV</option>
-                        <option value="sports">Sports</option>
-                        <option value="luxury">Luxury</option>
-                        <option value="electric">Electric</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary modal-close">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Car</button>
-                </div>
-            </form>
+<!-- Add/Edit Car Modal -->
+<div class="modal" id="carModal">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2 id="carModalTitle">Add New Car</h2>
+            <button class="modal-close">&times;</button>
         </div>
+        <form id="carForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Brand *</label>
+                    <input type="text" id="carBrand" required placeholder="e.g., Toyota">
+                </div>
+                <div class="form-group">
+                    <label>Model *</label>
+                    <input type="text" id="carModel" required placeholder="e.g., Camry">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Year *</label>
+                    <input type="number" id="carYear" required min="1900" max="2100" placeholder="e.g., 2024">
+                </div>
+                <div class="form-group">
+                    <label>Price per Day ($) *</label>
+                    <input type="number" id="carPrice" required min="0" step="0.01" placeholder="e.g., 150">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Seats *</label>
+                    <input type="number" id="carSeats" required min="1" max="20" placeholder="e.g., 5">
+                </div>
+                <div class="form-group">
+                    <label>Horsepower *</label>
+                    <input type="number" id="carHorsepower" required min="0" placeholder="e.g., 300">
+                </div>
+            </div>
+            
+            <!-- Image Source Selection -->
+            <div class="form-group">
+                <label>Car Image *</label>
+                <div class="image-source-toggle">
+                    <label>
+                        <input type="radio" name="imageSource" value="url" checked>
+                        <i class="fas fa-link"></i> Image URL
+                    </label>
+                    <label>
+                        <input type="radio" name="imageSource" value="upload">
+                        <i class="fas fa-upload"></i> Upload Image
+                    </label>
+                </div>
+            </div>
+            
+            <!-- URL Input -->
+            <div class="form-group" id="imageUrlGroup">
+                <input type="url" id="carImage" placeholder="https://example.com/car-image.jpg">
+                <small style="color: var(--admin-text-muted); display: block; margin-top: 0.5rem;">
+                    Enter a direct link to the car image
+                </small>
+            </div>
+            
+            <!-- Upload Input -->
+            <div class="form-group" id="imageUploadGroup" style="display: none;">
+                <div class="image-drop-zone" id="imageDropZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop an image here</p>
+                    <p>or <strong>click to browse</strong></p>
+                    <small>Supported: JPEG, PNG, GIF, WebP (Max 5MB)</small>
+                </div>
+                <input type="file" id="carImageFile" accept="image/jpeg,image/png,image/gif,image/webp" style="display: none;">
+            </div>
+            
+            <!-- Image Preview -->
+            <div id="imagePreviewContainer" style="display: none;"></div>
+            
+            <div class="form-group">
+                <label>Status *</label>
+                <select id="carStatus" required>
+                    <option value="available">Available</option>
+                    <option value="rented">Rented</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="carFeatured" style="width: auto; cursor: pointer;">
+                        <span>Featured on Homepage</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Badge (if featured)</label>
+                    <select id="carBadge">
+                        <option value="Featured">Featured</option>
+                        <option value="Popular">Popular</option>
+                        <option value="Luxury">Luxury</option>
+                        <option value="New">New</option>
+                        <option value="Premium">Premium</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Category *</label>
+                <select id="carCategory" required>
+                    <option value="sedan">Sedan</option>
+                    <option value="suv">SUV</option>
+                    <option value="sports">Sports</option>
+                    <option value="luxury">Luxury</option>
+                    <option value="electric">Electric</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary modal-close">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Car
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
     <!-- Add/Edit Booking Modal -->
     <div class="modal" id="bookingModal">

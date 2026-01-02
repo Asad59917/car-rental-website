@@ -1,6 +1,6 @@
 // ========================================
 // ADMIN DASHBOARD - COMPLETE UPDATED VERSION
-// Replace your entire admin-script.js with this file
+// With Image Upload Support
 // ========================================
 
 // ========================================
@@ -13,7 +13,8 @@ const state = {
     bookings: [],
     currentUser: null,
     currentCar: null,
-    currentBooking: null
+    currentBooking: null,
+    uploadedImageFile: null
 };
 
 // ========================================
@@ -99,22 +100,427 @@ function initializeEventListeners() {
         });
     });
     
-    // Add buttons
+    // Add buttons (in section headers)
     const addUserBtn = document.getElementById('addUserBtn');
     const addCarBtn = document.getElementById('addCarBtn');
     const addBookingBtn = document.getElementById('addBookingBtn');
     
-    if (addUserBtn) addUserBtn.addEventListener('click', () => openUserModal());
-    if (addCarBtn) addCarBtn.addEventListener('click', () => openCarModal());
-    if (addBookingBtn) addBookingBtn.addEventListener('click', () => openBookingModal());
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', () => openUserModal());
+        console.log('✅ Add User button connected');
+    }
+    if (addCarBtn) {
+        addCarBtn.addEventListener('click', () => openCarModal());
+        console.log('✅ Add Car button connected');
+    }
+    if (addBookingBtn) {
+        addBookingBtn.addEventListener('click', () => openBookingModal());
+        console.log('✅ Add Booking button connected');
+    }
+    
+    // ========================================
+    // QUICK ACTION BUTTONS (Dashboard)
+    // ========================================
+    document.querySelectorAll('.quick-action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            console.log('🎯 Quick action clicked:', action);
+            
+            switch(action) {
+                case 'add-user':
+                    openUserModal();
+                    break;
+                case 'add-car':
+                    openCarModal();
+                    break;
+                case 'view-bookings':
+                    navigateToSection('bookings');
+                    break;
+                case 'generate-report':
+                    generateReport();
+                    break;
+                default:
+                    console.log('Unknown action:', action);
+            }
+        });
+    });
+    console.log('✅ Quick Action buttons connected');
     
     // Form submissions
     if (elements.userForm) elements.userForm.addEventListener('submit', handleUserSubmit);
     if (elements.carForm) elements.carForm.addEventListener('submit', handleCarSubmit);
     if (elements.bookingForm) elements.bookingForm.addEventListener('submit', handleBookingSubmit);
     
+    // ========================================
+    // IMAGE UPLOAD EVENT LISTENERS
+    // ========================================
+    setupImageUploadListeners();
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAllModals();
+        }
+    });
+    
     console.log('✅ Event listeners configured');
 }
+
+// ========================================
+// IMAGE UPLOAD FUNCTIONS
+// ========================================
+function setupImageUploadListeners() {
+    // Image source toggle (URL vs Upload)
+    const imageSourceRadios = document.querySelectorAll('input[name="imageSource"]');
+    imageSourceRadios.forEach(radio => {
+        radio.addEventListener('change', handleImageSourceChange);
+    });
+    
+    // File input change
+    const carImageFile = document.getElementById('carImageFile');
+    if (carImageFile) {
+        carImageFile.addEventListener('change', handleImageFileSelect);
+    }
+    
+    // Drag and drop
+    const dropZone = document.getElementById('imageDropZone');
+    if (dropZone) {
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+        dropZone.addEventListener('drop', handleDrop);
+        dropZone.addEventListener('click', () => {
+            document.getElementById('carImageFile').click();
+        });
+    }
+    
+    // URL input preview
+    const carImageUrl = document.getElementById('carImage');
+    if (carImageUrl) {
+        carImageUrl.addEventListener('input', debounce(handleUrlPreview, 500));
+    }
+}
+
+function handleImageSourceChange(e) {
+    const urlGroup = document.getElementById('imageUrlGroup');
+    const uploadGroup = document.getElementById('imageUploadGroup');
+    const carImageUrl = document.getElementById('carImage');
+    
+    if (e.target.value === 'url') {
+        urlGroup.style.display = 'block';
+        uploadGroup.style.display = 'none';
+        carImageUrl.required = true;
+        state.uploadedImageFile = null;
+    } else {
+        urlGroup.style.display = 'none';
+        uploadGroup.style.display = 'block';
+        carImageUrl.required = false;
+        carImageUrl.value = '';
+    }
+    
+    // Clear preview
+    clearImagePreview();
+}
+
+function handleImageFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        validateAndPreviewImage(file);
+    }
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('drag-over');
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+        validateAndPreviewImage(file);
+        // Update the file input
+        const fileInput = document.getElementById('carImageFile');
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInput.files = dataTransfer.files;
+    }
+}
+
+function validateAndPreviewImage(file) {
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+        showNotification('Please select a valid image file (JPEG, PNG, GIF, or WebP)', 'error');
+        return false;
+    }
+    
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showNotification('Image size must be less than 5MB', 'error');
+        return false;
+    }
+    
+    // Store the file
+    state.uploadedImageFile = file;
+    
+    // Preview the image
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        showImagePreview(e.target.result, file.name, formatFileSize(file.size));
+    };
+    reader.readAsDataURL(file);
+    
+    return true;
+}
+
+function handleUrlPreview() {
+    const url = document.getElementById('carImage').value;
+    if (url) {
+        // Test if URL is valid image
+        const img = new Image();
+        img.onload = function() {
+            showImagePreview(url, 'URL Image', 'External');
+        };
+        img.onerror = function() {
+            clearImagePreview();
+        };
+        img.src = url;
+    } else {
+        clearImagePreview();
+    }
+}
+
+function showImagePreview(src, name, size) {
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = `
+            <div class="image-preview">
+                <img src="${src}" alt="Preview">
+                <div class="preview-info">
+                    <span class="preview-name">${name}</span>
+                    <span class="preview-size">${size}</span>
+                </div>
+                <button type="button" class="preview-remove" onclick="clearImagePreview()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        previewContainer.style.display = 'block';
+    }
+}
+
+function clearImagePreview() {
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        previewContainer.style.display = 'none';
+    }
+    state.uploadedImageFile = null;
+    
+    const fileInput = document.getElementById('carImageFile');
+    if (fileInput) {
+        fileInput.value = '';
+    }
+}
+
+window.clearImagePreview = clearImagePreview;
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ========================================
+// GENERATE REPORT FUNCTION
+// ========================================
+function generateReport() {
+    const totalRevenue = state.bookings.reduce((sum, booking) => {
+        if (booking.status === 'confirmed' || booking.status === 'completed') {
+            return sum + booking.totalPrice;
+        }
+        return sum;
+    }, 0);
+    
+    const pendingBookings = state.bookings.filter(b => b.status === 'pending').length;
+    const confirmedBookings = state.bookings.filter(b => b.status === 'confirmed').length;
+    const completedBookings = state.bookings.filter(b => b.status === 'completed').length;
+    const cancelledBookings = state.bookings.filter(b => b.status === 'cancelled' || b.status === 'rejected').length;
+    
+    const availableCars = state.cars.filter(c => c.status === 'available').length;
+    const rentedCars = state.cars.filter(c => c.status === 'rented').length;
+    const maintenanceCars = state.cars.filter(c => c.status === 'maintenance').length;
+    
+    const reportHTML = `
+        <div style="padding: 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="color: var(--admin-primary); margin-bottom: 0.5rem;">
+                    <i class="fas fa-chart-bar"></i> Dashboard Report
+                </h2>
+                <p style="color: var(--admin-text-muted);">Generated on ${new Date().toLocaleString()}</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <div style="padding: 1.5rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
+                    <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
+                        <i class="fas fa-users"></i> Users
+                    </h3>
+                    <p style="font-size: 2rem; font-weight: bold;">${state.users.length}</p>
+                    <p style="color: var(--admin-text-muted);">Total Registered Users</p>
+                </div>
+                
+                <div style="padding: 1.5rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
+                    <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
+                        <i class="fas fa-car"></i> Cars
+                    </h3>
+                    <p style="font-size: 2rem; font-weight: bold;">${state.cars.length}</p>
+                    <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                        <span style="color: var(--admin-success);">● ${availableCars} Available</span><br>
+                        <span style="color: var(--admin-info);">● ${rentedCars} Rented</span><br>
+                        <span style="color: var(--admin-warning);">● ${maintenanceCars} Maintenance</span>
+                    </div>
+                </div>
+                
+                <div style="padding: 1.5rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
+                    <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
+                        <i class="fas fa-calendar-check"></i> Bookings
+                    </h3>
+                    <p style="font-size: 2rem; font-weight: bold;">${state.bookings.length}</p>
+                    <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                        <span style="color: var(--admin-warning);">● ${pendingBookings} Pending</span><br>
+                        <span style="color: var(--admin-success);">● ${confirmedBookings} Confirmed</span><br>
+                        <span style="color: var(--admin-info);">● ${completedBookings} Completed</span><br>
+                        <span style="color: var(--admin-danger);">● ${cancelledBookings} Cancelled/Rejected</span>
+                    </div>
+                </div>
+                
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-hover) 100%); border-radius: 12px; color: white;">
+                    <h3 style="margin-bottom: 1rem;">
+                        <i class="fas fa-dollar-sign"></i> Revenue
+                    </h3>
+                    <p style="font-size: 2rem; font-weight: bold;">$${totalRevenue.toLocaleString()}</p>
+                    <p style="opacity: 0.9;">From Confirmed & Completed Bookings</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <button class="btn-primary" onclick="downloadReport()">
+                    <i class="fas fa-download"></i> Download Report
+                </button>
+            </div>
+        </div>
+    `;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'reportModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> System Report</h2>
+                <button class="modal-close" onclick="closeReportModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                ${reportHTML}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeReportModal();
+        }
+    });
+}
+
+window.closeReportModal = function() {
+    const modal = document.getElementById('reportModal');
+    if (modal) {
+        modal.remove();
+    }
+};
+
+window.downloadReport = function() {
+    const totalRevenue = state.bookings.reduce((sum, booking) => {
+        if (booking.status === 'confirmed' || booking.status === 'completed') {
+            return sum + booking.totalPrice;
+        }
+        return sum;
+    }, 0);
+    
+    const reportText = `
+CARENTAL DASHBOARD REPORT
+Generated: ${new Date().toLocaleString()}
+=====================================
+
+USERS
+-----
+Total Registered Users: ${state.users.length}
+
+CARS
+----
+Total Cars: ${state.cars.length}
+- Available: ${state.cars.filter(c => c.status === 'available').length}
+- Rented: ${state.cars.filter(c => c.status === 'rented').length}
+- Maintenance: ${state.cars.filter(c => c.status === 'maintenance').length}
+
+BOOKINGS
+--------
+Total Bookings: ${state.bookings.length}
+- Pending: ${state.bookings.filter(b => b.status === 'pending').length}
+- Confirmed: ${state.bookings.filter(b => b.status === 'confirmed').length}
+- Completed: ${state.bookings.filter(b => b.status === 'completed').length}
+- Cancelled/Rejected: ${state.bookings.filter(b => b.status === 'cancelled' || b.status === 'rejected').length}
+
+REVENUE
+-------
+Total Revenue (Confirmed & Completed): $${totalRevenue.toLocaleString()}
+
+=====================================
+End of Report
+    `;
+    
+    const blob = new Blob([reportText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `carental-report-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showNotification('Report downloaded successfully', 'success');
+};
 
 // ========================================
 // AUTHENTICATION
@@ -368,7 +774,7 @@ function renderCarsGrid() {
         const carId = car._id || car.id;
         return `
         <div class="car-card">
-            <img src="${car.image}" alt="${car.brand} ${car.model}" class="car-image">
+            <img src="${car.image}" alt="${car.brand} ${car.model}" class="car-image" onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">
             <div class="car-details">
                 <div class="car-header">
                     <div>
@@ -430,10 +836,10 @@ function renderBookingsTable() {
             <td>$${booking.totalPrice}</td>
             <td>
                 ${booking.status === 'pending' ? `
-                    <button class="action-btn confirm" onclick="confirmBooking('${booking._id}')" title="Confirm">
+                    <button class="action-btn confirm" onclick="confirmBooking('${booking._id}')" title="Confirm" style="color: var(--admin-success);">
                         <i class="fas fa-check"></i>
                     </button>
-                    <button class="action-btn reject" onclick="rejectBooking('${booking._id}')" title="Reject">
+                    <button class="action-btn reject" onclick="rejectBooking('${booking._id}')" title="Reject" style="color: var(--admin-danger);">
                         <i class="fas fa-times"></i>
                     </button>
                 ` : ''}
@@ -490,12 +896,14 @@ function openUserModal(userId = null) {
             document.getElementById('userName').value = user.name;
             document.getElementById('userEmail').value = user.email;
             document.getElementById('userPassword').required = false;
+            document.getElementById('userPassword').placeholder = 'Leave blank to keep current';
         }
     } else {
         state.currentUser = null;
         title.textContent = 'Add New User';
         elements.userForm.reset();
         document.getElementById('userPassword').required = true;
+        document.getElementById('userPassword').placeholder = '';
     }
     
     modal.classList.add('active');
@@ -504,6 +912,18 @@ function openUserModal(userId = null) {
 function openCarModal(carId = null) {
     const modal = elements.carModal;
     const title = document.getElementById('carModalTitle');
+    
+    // Reset image upload state
+    state.uploadedImageFile = null;
+    clearImagePreview();
+    
+    // Reset to URL mode by default
+    const urlRadio = document.querySelector('input[name="imageSource"][value="url"]');
+    if (urlRadio) {
+        urlRadio.checked = true;
+        document.getElementById('imageUrlGroup').style.display = 'block';
+        document.getElementById('imageUploadGroup').style.display = 'none';
+    }
     
     if (carId) {
         const car = state.cars.find(c => c._id === carId || c.id === carId);
@@ -521,6 +941,11 @@ function openCarModal(carId = null) {
             document.getElementById('carFeatured').checked = car.featured || false;
             document.getElementById('carBadge').value = car.badge || 'Featured';
             document.getElementById('carCategory').value = car.category || 'sedan';
+            
+            // Show existing image preview
+            if (car.image) {
+                showImagePreview(car.image, 'Current Image', 'Existing');
+            }
         }
     } else {
         state.currentCar = null;
@@ -541,21 +966,29 @@ function openBookingModal(bookingId = null) {
     // Populate customer dropdown
     const customerSelect = document.getElementById('bookingCustomer');
     customerSelect.innerHTML = '<option value="">Select Customer</option>' +
-        state.users.map(user => `<option value="${user._id}">${user.name}</option>`).join('');
+        state.users.map(user => `<option value="${user._id}">${user.name} (${user.email})</option>`).join('');
     
     // Populate car dropdown (only available cars)
     const carSelect = document.getElementById('bookingCar');
+    const availableCars = state.cars.filter(car => car.status === 'available');
     carSelect.innerHTML = '<option value="">Select Car</option>' +
-        state.cars.filter(car => car.status === 'available').map(car => 
+        availableCars.map(car => 
             `<option value="${car._id || car.id}">${car.brand} ${car.model} - $${car.price}/day</option>`
         ).join('');
+    
+    // Set minimum dates
+    const today = new Date().toISOString().split('T')[0];
+    const startDateInput = document.getElementById('bookingStartDate');
+    const endDateInput = document.getElementById('bookingEndDate');
+    
+    if (startDateInput) startDateInput.min = today;
+    if (endDateInput) endDateInput.min = today;
     
     if (bookingId) {
         const booking = state.bookings.find(b => b._id === bookingId);
         if (booking) {
             state.currentBooking = booking;
             title.textContent = 'Edit Booking';
-            // Populate form fields here if needed
         }
     } else {
         state.currentBooking = null;
@@ -574,6 +1007,8 @@ function closeAllModals() {
     state.currentUser = null;
     state.currentCar = null;
     state.currentBooking = null;
+    state.uploadedImageFile = null;
+    clearImagePreview();
 }
 
 // ========================================
@@ -588,17 +1023,20 @@ async function handleUserSubmit(e) {
         password: document.getElementById('userPassword').value
     };
     
+    // Remove empty password for updates
+    if (state.currentUser && !formData.password) {
+        delete formData.password;
+    }
+    
     try {
         let response;
         if (state.currentUser) {
-            // Update existing user
             response = await fetch(`/users/${state.currentUser._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
         } else {
-            // Create new user
             response = await fetch('/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -623,36 +1061,68 @@ async function handleUserSubmit(e) {
 async function handleCarSubmit(e) {
     e.preventDefault();
     
-    const formData = {
-        brand: document.getElementById('carBrand').value,
-        model: document.getElementById('carModel').value,
-        year: parseInt(document.getElementById('carYear').value),
-        price: parseFloat(document.getElementById('carPrice').value),
-        seats: parseInt(document.getElementById('carSeats').value),
-        horsepower: parseInt(document.getElementById('carHorsepower').value),
-        image: document.getElementById('carImage').value,
-        status: document.getElementById('carStatus').value,
-        featured: document.getElementById('carFeatured').checked,
-        badge: document.getElementById('carBadge').value,
-        category: document.getElementById('carCategory').value
-    };
+    const imageSource = document.querySelector('input[name="imageSource"]:checked')?.value || 'url';
+    let imageUrl = document.getElementById('carImage').value;
+    
+    // Show loading state
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     
     try {
+        // If upload mode and file selected, upload the image first
+        if (imageSource === 'upload' && state.uploadedImageFile) {
+            const uploadFormData = new FormData();
+            uploadFormData.append('image', state.uploadedImageFile);
+            
+            const uploadResponse = await fetch('/api/upload', {
+                method: 'POST',
+                body: uploadFormData
+            });
+            
+            if (uploadResponse.ok) {
+                const uploadResult = await uploadResponse.json();
+                imageUrl = uploadResult.imageUrl;
+                console.log('✅ Image uploaded:', imageUrl);
+            } else {
+                const error = await uploadResponse.json();
+                throw new Error(error.error || 'Failed to upload image');
+            }
+        }
+        
+        // Validate image URL
+        if (!imageUrl) {
+            throw new Error('Please provide an image URL or upload an image');
+        }
+        
+        const carData = {
+            brand: document.getElementById('carBrand').value,
+            model: document.getElementById('carModel').value,
+            year: parseInt(document.getElementById('carYear').value),
+            price: parseFloat(document.getElementById('carPrice').value),
+            seats: parseInt(document.getElementById('carSeats').value),
+            horsepower: parseInt(document.getElementById('carHorsepower').value),
+            image: imageUrl,
+            status: document.getElementById('carStatus').value,
+            featured: document.getElementById('carFeatured').checked,
+            badge: document.getElementById('carBadge').value,
+            category: document.getElementById('carCategory').value
+        };
+        
         let response;
         
         if (state.currentCar && state.currentCar._id) {
-            // Update existing car
             response = await fetch(`/api/cars/${state.currentCar._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(carData)
             });
         } else {
-            // Create new car
             response = await fetch('/api/cars', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(carData)
             });
         }
         
@@ -666,7 +1136,11 @@ async function handleCarSubmit(e) {
         }
     } catch (error) {
         console.error('Error saving car:', error);
-        showNotification('Network error', 'error');
+        showNotification(error.message || 'Network error', 'error');
+    } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
     }
 }
 
@@ -679,15 +1153,26 @@ async function handleBookingSubmit(e) {
     const endDate = document.getElementById('bookingEndDate').value;
     const status = document.getElementById('bookingStatus').value;
     
+    if (!customerId || !carId || !startDate || !endDate) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
     const customer = state.users.find(u => u._id === customerId);
     const car = state.cars.find(c => (c._id || c.id) === carId);
     
     if (!customer || !car) {
-        showNotification('Please select customer and car', 'error');
+        showNotification('Please select valid customer and car', 'error');
         return;
     }
     
     const days = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+    
+    if (days < 1) {
+        showNotification('End date must be after start date', 'error');
+        return;
+    }
+    
     const total = days * car.price;
     
     const formData = {
@@ -805,7 +1290,7 @@ window.confirmBooking = async function(bookingId) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     status: 'confirmed',
-                    adminNotes: adminNotes || ''
+                    adminNotes: adminNotes || 'Booking confirmed by admin'
                 })
             });
             
@@ -827,7 +1312,7 @@ window.rejectBooking = async function(bookingId) {
     const reason = prompt('Please provide a reason for rejection:');
     
     if (!reason) {
-        alert('Rejection reason is required');
+        showNotification('Rejection reason is required', 'error');
         return;
     }
     
@@ -863,6 +1348,7 @@ window.viewBookingDetails = function(bookingId) {
     const customerName = booking.userId?.name || booking.fullName || 'N/A';
     const customerEmail = booking.userId?.email || booking.email || 'N/A';
     const carName = booking.carId ? `${booking.carId.brand} ${booking.carId.model}` : 'N/A';
+    const carImage = booking.carId?.image || 'https://via.placeholder.com/300x200';
     
     const detailsHTML = `
         <div style="padding: 2rem;">
@@ -873,7 +1359,13 @@ window.viewBookingDetails = function(bookingId) {
             </div>
             
             <div style="display: grid; gap: 2rem;">
-                <div style="padding: 1.5rem; background: var(--admin-bg-secondary); border-radius: 12px;">
+                <!-- Car Image -->
+                <div style="text-align: center;">
+                    <img src="${carImage}" alt="${carName}" style="max-width: 100%; max-height: 200px; border-radius: 12px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                    <h3 style="margin-top: 1rem; color: var(--admin-primary);">${carName}</h3>
+                </div>
+                
+                <div style="padding: 1.5rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
                     <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
                         <i class="fas fa-user"></i> Customer Information
                     </h3>
@@ -885,14 +1377,7 @@ window.viewBookingDetails = function(bookingId) {
                     </div>
                 </div>
                 
-                <div style="padding: 1.5rem; background: var(--admin-bg-secondary); border-radius: 12px;">
-                    <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
-                        <i class="fas fa-car"></i> Vehicle
-                    </h3>
-                    <p style="font-size: 1.1rem;"><strong>${carName}</strong></p>
-                </div>
-                
-                <div style="padding: 1.5rem; background: var(--admin-bg-secondary); border-radius: 12px;">
+                <div style="padding: 1.5rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
                     <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
                         <i class="fas fa-map-marker-alt"></i> Pickup Details
                     </h3>
@@ -904,7 +1389,7 @@ window.viewBookingDetails = function(bookingId) {
                     </div>
                 </div>
                 
-                <div style="padding: 1.5rem; background: var(--admin-bg-secondary); border-radius: 12px;">
+                <div style="padding: 1.5rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
                     <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
                         <i class="fas fa-map-marker-alt"></i> Return Details
                     </h3>
@@ -916,22 +1401,22 @@ window.viewBookingDetails = function(bookingId) {
                     </div>
                 </div>
                 
-                <div style="padding: 1.5rem; background: var(--admin-bg-secondary); border-radius: 12px;">
-                    <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-hover) 100%); border-radius: 12px; color: white;">
+                    <h3 style="margin-bottom: 1rem;">
                         <i class="fas fa-dollar-sign"></i> Pricing
                     </h3>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
                         <div><strong>Total Days:</strong><br>${booking.totalDays}</div>
                         <div><strong>Price/Day:</strong><br>$${booking.pricePerDay}</div>
-                        <div style="grid-column: 1 / -1; text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--admin-border);">
+                        <div style="grid-column: 1 / -1; text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid rgba(255,255,255,0.3);">
                             <strong style="font-size: 1.2rem;">Total Amount:</strong><br>
-                            <span style="font-size: 2.5rem; color: var(--admin-primary); font-weight: bold;">$${booking.totalPrice}</span>
+                            <span style="font-size: 2.5rem; font-weight: bold;">$${booking.totalPrice}</span>
                         </div>
                     </div>
                 </div>
                 
                 ${booking.specialRequests ? `
-                    <div style="padding: 1.5rem; background: var(--admin-bg-secondary); border-radius: 12px;">
+                    <div style="padding: 1.5rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
                         <h3 style="margin-bottom: 1rem; color: var(--admin-primary);">
                             <i class="fas fa-comment"></i> Special Requests
                         </h3>
@@ -948,7 +1433,7 @@ window.viewBookingDetails = function(bookingId) {
                     </div>
                 ` : ''}
                 
-                <div style="text-align: center; padding: 1rem; background: var(--admin-bg-secondary); border-radius: 12px;">
+                <div style="text-align: center; padding: 1rem; background: var(--admin-bg-tertiary); border-radius: 12px;">
                     <small style="color: var(--admin-text-muted);">
                         Booking ID: ${booking._id}<br>
                         Created: ${new Date(booking.createdAt).toLocaleString()}
@@ -957,7 +1442,7 @@ window.viewBookingDetails = function(bookingId) {
                 
                 ${booking.status === 'pending' ? `
                     <div style="display: flex; gap: 1rem; justify-content: center;">
-                        <button class="btn-primary" onclick="confirmBooking('${booking._id}'); closeBookingDetailsModal();" style="padding: 1rem 2rem; font-size: 1rem;">
+                        <button class="btn-success" onclick="confirmBooking('${booking._id}'); closeBookingDetailsModal();" style="padding: 1rem 2rem; font-size: 1rem;">
                             <i class="fas fa-check"></i> Confirm Booking
                         </button>
                         <button class="btn-danger" onclick="rejectBooking('${booking._id}'); closeBookingDetailsModal();" style="padding: 1rem 2rem; font-size: 1rem;">
@@ -975,7 +1460,7 @@ window.viewBookingDetails = function(bookingId) {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2><i class="fas fa-file-alt"></i> Booking Details</h2>
+                <h2><i class="fas fa-file-alt"></i> Booking #${booking._id.substring(0, 8).toUpperCase()}</h2>
                 <button class="modal-close" onclick="closeBookingDetailsModal()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -1026,24 +1511,33 @@ window.deleteBooking = async function(bookingId) {
 // NOTIFICATIONS
 // ========================================
 function showNotification(message, type = 'info') {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(n => n.remove());
+    
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     
     const icons = {
         success: 'fa-check-circle',
         error: 'fa-exclamation-circle',
-        info: 'fa-info-circle'
+        info: 'fa-info-circle',
+        warning: 'fa-exclamation-triangle'
     };
     
     const colors = {
         success: '#10b981',
         error: '#ef4444',
-        info: '#3b82f6'
+        info: '#3b82f6',
+        warning: '#f59e0b'
     };
     
     notification.innerHTML = `
         <i class="fas ${icons[type] || icons.info}"></i>
         <span>${message}</span>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; margin-left: 1rem; cursor: pointer;">
+            <i class="fas fa-times"></i>
+        </button>
     `;
     
     notification.style.cssText = `
@@ -1061,6 +1555,7 @@ function showNotification(message, type = 'info') {
         gap: 0.75rem;
         animation: slideIn 0.3s ease;
         font-weight: 500;
+        max-width: 400px;
     `;
     
     document.body.appendChild(notification);
@@ -1068,10 +1563,10 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => notification.remove(), 300);
-    }, 3000);
+    }, 4000);
 }
 
-// Add animations
+// Add animations and styles
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {
@@ -1095,6 +1590,145 @@ style.textContent = `
             opacity: 0;
         }
     }
+    
+    .action-btn.confirm:hover {
+        color: var(--admin-success) !important;
+        background: rgba(56, 161, 105, 0.1);
+    }
+    
+    .action-btn.reject:hover {
+        color: var(--admin-danger) !important;
+        background: rgba(229, 62, 62, 0.1);
+    }
+    
+    .btn-success {
+        background: var(--admin-success);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-success:hover {
+        background: #2f855a;
+        transform: translateY(-2px);
+    }
+    
+    /* Image Upload Styles */
+    .image-source-toggle {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .image-source-toggle label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    
+    .image-source-toggle input[type="radio"] {
+        width: auto;
+        cursor: pointer;
+    }
+    
+    .image-drop-zone {
+        border: 2px dashed var(--admin-border-color);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--admin-bg-primary);
+    }
+    
+    .image-drop-zone:hover {
+        border-color: var(--admin-primary);
+        background: rgba(49, 69, 89, 0.05);
+    }
+    
+    .image-drop-zone.drag-over {
+        border-color: var(--admin-primary);
+        background: rgba(49, 69, 89, 0.1);
+        transform: scale(1.02);
+    }
+    
+    .image-drop-zone i {
+        font-size: 3rem;
+        color: var(--admin-text-muted);
+        margin-bottom: 1rem;
+    }
+    
+    .image-drop-zone p {
+        color: var(--admin-text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .image-drop-zone small {
+        color: var(--admin-text-muted);
+    }
+    
+    .image-preview {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--admin-bg-tertiary);
+        border-radius: 0.75rem;
+        margin-top: 1rem;
+    }
+    
+    .image-preview img {
+        width: 100px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+    }
+    
+    .preview-info {
+        flex: 1;
+    }
+    
+    .preview-name {
+        display: block;
+        font-weight: 600;
+        color: var(--admin-text-primary);
+        margin-bottom: 0.25rem;
+        word-break: break-all;
+    }
+    
+    .preview-size {
+        font-size: 0.875rem;
+        color: var(--admin-text-muted);
+    }
+    
+    .preview-remove {
+        background: var(--admin-danger);
+        color: white;
+        border: none;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    
+    .preview-remove:hover {
+        background: #c53030;
+        transform: scale(1.1);
+    }
 `;
 document.head.appendChild(style);
 
@@ -1104,8 +1738,9 @@ document.head.appendChild(style);
 console.log('✅✅✅ Admin Dashboard Script Loaded Successfully!');
 console.log('📊 Features Active:');
 console.log('   - User Management');
-console.log('   - Car Management');
+console.log('   - Car Management (with Image Upload)');
 console.log('   - Booking Management (Confirm/Reject/View/Delete)');
 console.log('   - Dashboard Stats');
+console.log('   - Quick Actions (Add User, Add Car, View Bookings, Generate Report)');
 console.log('   - Theme Toggle');
 console.log('   - Responsive Sidebar');
