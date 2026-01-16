@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Fleet - CARENTAL</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="/public/css/styles.css">
     <link rel="stylesheet" href="/public/css/fleet-css.css">
 </head>
 <body>
-    <!-- Modern Header -->
     <header class="modern-header">
         <div class="header-content">
-            <!-- Logo -->
             <a href="/" class="logo-link">
                 <div class="logo">
                     <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -32,7 +27,6 @@
                 </div>
             </a>
 
-            <!-- Desktop Navigation -->
             <nav class="desktop-nav">
                 <a href="/car-rental-website.html" class="nav-link">Home</a>
                 <a href="/fleet.html" class="nav-link active">Fleet</a>
@@ -40,9 +34,7 @@
                 <a href="/my-bookings.html" class="nav-link" id="myBookingsLink" style="display: none;">My Bookings</a>
             </nav>
 
-            <!-- Header Actions -->
             <div class="header-actions">
-                <!-- Theme Toggle -->
                 <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
                     <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -60,7 +52,6 @@
                     </svg>
                 </button>
 
-                <!-- Sign In Button (shown when not logged in) -->
                 <button class="btn-signin" id="signinBtn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -69,7 +60,6 @@
                     <span>Sign In</span>
                 </button>
 
-                <!-- Mobile Menu Toggle -->
                 <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
                     <span class="hamburger-line"></span>
                     <span class="hamburger-line"></span>
@@ -78,7 +68,6 @@
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
         <nav class="mobile-nav" id="mobileNav">
             <div class="mobile-nav-content">
                 <a href="/" class="mobile-nav-link">
@@ -112,7 +101,6 @@
                 
                 <div class="mobile-nav-divider"></div>
                 
-                <!-- Mobile Sign In (shown when not logged in) -->
                 <button class="mobile-nav-btn" id="mobileSigninBtn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -124,11 +112,9 @@
             </div>
         </nav>
 
-        <!-- Mobile Nav Overlay -->
         <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     </header>
 
-    <!-- Hero Section -->
     <section class="fleet-hero">
         <div class="fleet-hero-overlay"></div>
         <div class="fleet-hero-content">
@@ -137,11 +123,9 @@
         </div>
     </section>
 
-    <!-- Filter Section -->
     <section class="fleet-filters-section">
         <div class="fleet-container">
             <div class="filters-wrapper">
-                <!-- Category Filters -->
                 <div class="category-filters">
                     <button class="category-btn active" data-category="all">
                         <i class="fas fa-border-all"></i>
@@ -175,7 +159,6 @@
                     </button>
                 </div>
 
-                <!-- Search & Sort -->
                 <div class="search-sort-wrapper">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
@@ -192,7 +175,6 @@
                     </div>
                 </div>
 
-                <!-- Price Range Filter -->
                 <div class="price-filter">
                     <label for="priceRange">Price Range: $<span id="priceValue">0</span> - $<span id="maxPriceValue">1000</span>/day</label>
                     <div class="price-slider-wrapper">
@@ -204,10 +186,8 @@
         </div>
     </section>
 
-    <!-- Cars Grid Section -->
     <section class="fleet-cars-section">
         <div class="fleet-container">
-            <!-- Results Info -->
             <div class="results-info">
                 <h2>Available Vehicles (<span id="resultsCount">0</span>)</h2>
                 <div class="view-toggle">
@@ -220,18 +200,14 @@
                 </div>
             </div>
 
-            <!-- Loading State -->
             <div class="loading-state" id="loadingState">
                 <div class="spinner"></div>
                 <p>Loading vehicles...</p>
             </div>
 
-            <!-- Cars Grid -->
             <div class="fleet-grid" id="fleetGrid">
-                <!-- Cars will be dynamically loaded here -->
             </div>
 
-            <!-- No Results -->
             <div class="no-results" id="noResults" style="display: none;">
                 <i class="fas fa-car-crash"></i>
                 <h3>No vehicles found</h3>
@@ -241,7 +217,6 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="fleet-cta-section">
         <div class="fleet-container">
             <div class="cta-content">
@@ -261,7 +236,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-grid">
@@ -329,7 +303,6 @@
         </div>
     </footer>
 
-    <!-- Car Detail Modal -->
     <div class="car-modal" id="carModal">
         <div class="modal-overlay" onclick="closeCarModal()"></div>
         <div class="modal-content">
@@ -337,12 +310,10 @@
                 <i class="fas fa-times"></i>
             </button>
             <div class="modal-body" id="modalBody">
-                <!-- Car details will be loaded here -->
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="/public/js/fleet-script.js"></script>
 </body>
 </html>

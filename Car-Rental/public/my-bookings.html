@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings - CARENTAL</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="/public/css/styles.css">
     <link rel="stylesheet" href="/public/css/my-bookings.css">
 </head>
 <body>
-    <!-- Modern Header -->
     <header class="modern-header">
         <div class="header-content">
-            <!-- Logo -->
             <a href="/" class="logo-link">
                 <div class="logo">
                     <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -32,7 +27,6 @@
                 </div>
             </a>
 
-            <!-- Desktop Navigation -->
             <nav class="desktop-nav">
                 <a href="/" class="nav-link">Home</a>
                 <a href="/fleet.html" class="nav-link">Fleet</a>
@@ -40,9 +34,7 @@
                 <a href="/my-bookings.html" class="nav-link active">My Bookings</a>
             </nav>
 
-            <!-- Header Actions -->
             <div class="header-actions">
-                <!-- Theme Toggle -->
                 <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
                     <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -60,10 +52,8 @@
                     </svg>
                 </button>
 
-                <!-- User Menu (will be populated by JS) -->
                 <div id="userMenuContainer"></div>
 
-                <!-- Mobile Menu Toggle -->
                 <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
                     <span class="hamburger-line"></span>
                     <span class="hamburger-line"></span>
@@ -72,7 +62,6 @@
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
         <nav class="mobile-nav" id="mobileNav">
             <div class="mobile-nav-content">
                 <a href="/" class="mobile-nav-link">
@@ -106,16 +95,13 @@
                 
                 <div class="mobile-nav-divider"></div>
                 
-                <!-- Mobile user section (will be populated by JS) -->
                 <div id="mobileUserSection"></div>
             </div>
         </nav>
 
-        <!-- Mobile Nav Overlay -->
         <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     </header>
 
-    <!-- Main Content -->
     <main class="bookings-main">
         <div class="bookings-container">
             <div class="page-header">
@@ -123,7 +109,6 @@
                 <p>Track and manage all your car rental bookings</p>
             </div>
 
-            <!-- Filter Section -->
             <div class="filter-section">
                 <div class="filter-group">
                     <label for="statusFilter">Status</label>
@@ -146,7 +131,6 @@
                 </div>
             </div>
 
-            <!-- Bookings List -->
             <div class="bookings-list" id="bookingsList">
                 <div class="loading-state">
                     <i class="fas fa-spinner fa-spin"></i>
@@ -154,7 +138,6 @@
                 </div>
             </div>
 
-            <!-- Empty State -->
             <div class="empty-state" id="emptyState" style="display: none;">
                 <i class="fas fa-inbox"></i>
                 <h2>No Bookings Found</h2>
@@ -166,7 +149,6 @@
         </div>
     </main>
 
-    <!-- Booking Details Modal -->
     <div class="modal" id="detailsModal">
         <div class="modal-overlay" onclick="closeModal('detailsModal')"></div>
         <div class="modal-content modal-large">
@@ -177,7 +159,6 @@
         </div>
     </div>
 
-    <!-- Cancel Confirmation Modal -->
     <div class="modal" id="cancelModal">
         <div class="modal-overlay" onclick="closeModal('cancelModal')"></div>
         <div class="modal-content">

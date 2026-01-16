@@ -1,4 +1,3 @@
-// Contact Message Model
 const mongoose = require('mongoose');
 
 const contactMessageSchema = new mongoose.Schema({
@@ -49,7 +48,6 @@ const contactMessageSchema = new mongoose.Schema({
     }
 });
 
-// Index for efficient queries
 contactMessageSchema.index({ status: 1, createdAt: -1 });
 contactMessageSchema.index({ email: 1 });
 

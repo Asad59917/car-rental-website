@@ -66,12 +66,10 @@ const carSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Virtual for full car name
 carSchema.virtual('fullName').get(function() {
     return `${this.brand} ${this.model}`;
 });
 
-// Method to check if car is available
 carSchema.methods.isAvailable = function() {
     return this.status === 'available';
 };

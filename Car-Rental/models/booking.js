@@ -11,7 +11,6 @@ const bookingSchema = new mongoose.Schema({
         ref: 'Car',
         required: true
     },
-    // Customer Information
     fullName: {
         type: String,
         required: true,
@@ -32,7 +31,6 @@ const bookingSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    // Pickup Details
     pickupLocation: {
         type: String,
         required: true
@@ -49,7 +47,6 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // Return Details
     returnLocation: {
         type: String,
         required: true
@@ -66,7 +63,6 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // Pricing
     totalDays: {
         type: Number,
         required: true,
@@ -80,13 +76,11 @@ const bookingSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    // Status
     status: {
         type: String,
         enum: ['pending', 'confirmed', 'rejected', 'cancelled', 'completed'],
         default: 'pending'
     },
-    // Additional Info
     specialRequests: {
         type: String,
         default: ''
@@ -99,7 +93,6 @@ const bookingSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Update timestamps on save
 bookingSchema.pre('save', function(next) {
     this.updatedAt = Date.now();
     next();

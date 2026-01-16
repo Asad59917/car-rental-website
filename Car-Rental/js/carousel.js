@@ -1,11 +1,3 @@
-/**
- * CAR CAROUSEL MODULE
- * Handles the main car slider/carousel functionality
- */
-
-// ========================================
-// CAR DATA
-// ========================================
 const carsArray = [
     {
         id: 'mustang',
@@ -138,14 +130,8 @@ const carsArray = [
     }
 ];
 
-// ========================================
-// STATE MANAGEMENT
-// ========================================
 let currentSlide = 2;
 
-// ========================================
-// DOM ELEMENTS
-// ========================================
 const carNamesWrapper = document.getElementById('carNamesWrapper');
 const carSlidesWrapper = document.getElementById('carSlidesWrapper');
 const pageControlDots = document.getElementById('pageControlDots');
@@ -157,23 +143,17 @@ const detailsPage = document.querySelector('.details-page');
 const backButton = document.querySelector('.back-button');
 const rentNowDetailsBtn = document.querySelector('.rent-now-details');
 
-// ========================================
-// INITIALIZE CAROUSEL
-// ========================================
 function initializeCarousel() {
-    // Clear existing content
     carNamesWrapper.innerHTML = '';
     carSlidesWrapper.innerHTML = '';
     pageControlDots.innerHTML = '';
 
-    // Create car name elements
     carsArray.forEach((car, index) => {
         const carName = document.createElement('div');
         carName.className = 'car-name';
         carName.setAttribute('data-index', index);
         carName.setAttribute('data-id', car.id);
         
-        // Apply text styling
         if (car.textStyling) {
             carName.style.setProperty('--brand-font-size', car.textStyling.brandFontSize);
             carName.style.setProperty('--brand-font-size-active', car.textStyling.brandFontSizeActive);
@@ -203,14 +183,12 @@ function initializeCarousel() {
         carNamesWrapper.appendChild(carName);
     });
 
-    // Create car slide elements
     carsArray.forEach((car, index) => {
         const carSlide = document.createElement('div');
         carSlide.className = 'car-slide animate-in';
         carSlide.setAttribute('data-index', index);
         carSlide.setAttribute('data-id', car.id);
         
-        // Apply image styling
         if (car.styling) {
             carSlide.style.setProperty('--img-width', car.styling.width);
             carSlide.style.setProperty('--img-scale', car.styling.scale);
@@ -225,7 +203,6 @@ function initializeCarousel() {
         carSlidesWrapper.appendChild(carSlide);
     });
 
-    // Create pagination dots
     carsArray.forEach((car, index) => {
         const dot = document.createElement('div');
         dot.className = 'dot';
@@ -237,9 +214,6 @@ function initializeCarousel() {
     updateSlider();
 }
 
-// ========================================
-// RESPONSIVE DIMENSIONS
-// ========================================
 function getResponsiveDimensions() {
     const width = window.innerWidth;
     if (width <= 480) {
@@ -253,22 +227,16 @@ function getResponsiveDimensions() {
     }
 }
 
-// ========================================
-// UPDATE SLIDER POSITION
-// ========================================
 function updateSlider() {
     const dims = getResponsiveDimensions();
     const slideWidth = dims.slideWidth + dims.gap;
     
-    // Update slide position
     const offset = -currentSlide * slideWidth;
     carSlidesWrapper.style.transform = `translateX(${offset}px)`;
 
-    // Update name position
     const nameOffset = -currentSlide * dims.nameHeight;
     carNamesWrapper.style.transform = `translateY(${nameOffset}px)`;
 
-    // Update active states
     const carNames = document.querySelectorAll('.main-view .car-name');
     const dots = document.querySelectorAll('.dot');
 
@@ -280,23 +248,17 @@ function updateSlider() {
         dot.classList.toggle('active', index === currentSlide);
     });
 
-    // Update details page
     updateDetailsPage();
 }
 
-// ========================================
-// UPDATE DETAILS PAGE
-// ========================================
 function updateDetailsPage() {
     const currentCar = carsArray[currentSlide];
     
-    // Update specs
     const specValues = detailsPage.querySelectorAll('.spec-value');
     specValues[0].textContent = currentCar.specs.gas;
     specValues[1].textContent = currentCar.specs.seats;
     specValues[2].textContent = currentCar.specs.horsepower;
 
-    // Update gallery images
     const galleryImages = detailsPage.querySelectorAll('.gallery-image img');
     currentCar.gallery.forEach((img, index) => {
         if (galleryImages[index]) {
@@ -305,9 +267,6 @@ function updateDetailsPage() {
     });
 }
 
-// ========================================
-// NAVIGATION FUNCTIONS
-// ========================================
 function nextSlide() {
     currentSlide = (currentSlide + 1) % carsArray.length;
     updateSlider();
@@ -318,9 +277,6 @@ function prevSlide() {
     updateSlider();
 }
 
-// ========================================
-// EVENT LISTENERS
-// ========================================
 arrowLeft.addEventListener('click', prevSlide);
 arrowRight.addEventListener('click', nextSlide);
 
@@ -331,14 +287,12 @@ pageControlDots.addEventListener('click', (e) => {
     }
 });
 
-// Keyboard navigation
 document.addEventListener('keydown', (e) => {
     if (detailsPage.classList.contains('active')) return;
     if (e.key === 'ArrowLeft') prevSlide();
     if (e.key === 'ArrowRight') nextSlide();
 });
 
-// Details page navigation
 detailsBtn.addEventListener('click', () => {
     detailsPage.classList.add('active');
 });
@@ -347,7 +301,6 @@ backButton.addEventListener('click', () => {
     detailsPage.classList.remove('active');
 });
 
-// Rent buttons
 rentNowBtn.addEventListener('click', () => {
     alert(`Rent ${carsArray[currentSlide].name} - Coming soon!`);
 });
@@ -356,7 +309,6 @@ rentNowDetailsBtn.addEventListener('click', () => {
     alert(`Rent ${carsArray[currentSlide].name} - Coming soon!`);
 });
 
-// Resize handler
 let resizeTimer;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
@@ -365,7 +317,6 @@ window.addEventListener('resize', () => {
     }, 250);
 });
 
-// Touch swipe support
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -389,7 +340,4 @@ function handleSwipe() {
     }
 }
 
-// ========================================
-// INITIALIZE ON LOAD
-// ========================================
 initializeCarousel();

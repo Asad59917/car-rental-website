@@ -1,27 +1,13 @@
-/**
- * CAR RENTAL - MAIN SCRIPT
- * Combined module for carousel, testimonials, scroll animations, theme, and user authentication
- * Now with full responsive support and mobile burger menu
- */
-
-// ========================================
-// GLOBAL STATE
-// ========================================
 let currentSlide = 2;
 let currentTestimonial = 0;
 let isMobile = window.innerWidth <= 768;
 let isTablet = window.innerWidth <= 1024 && window.innerWidth > 768;
 
-// ========================================
-// DOM ELEMENTS
-// ========================================
-// Burger Menu Elements
 const burgerMenu = document.getElementById('burgerMenu');
 const navMobile = document.getElementById('navMobile');
 const closeMenu = document.getElementById('closeMenu');
 const mobileThemeToggle = document.getElementById('mobileThemeToggle');
 
-// Carousel Elements
 const carNamesWrapper = document.getElementById('carNamesWrapper');
 const carSlidesWrapper = document.getElementById('carSlidesWrapper');
 const pageControlDots = document.getElementById('pageControlDots');
@@ -33,15 +19,12 @@ const detailsPage = document.querySelector('.details-page');
 const backButton = document.querySelector('.back-button');
 const rentNowDetailsBtn = document.querySelector('.rent-now-details');
 
-// Details Page Elements
 const detailsCarNamesWrapper = document.getElementById('detailsCarNamesWrapper');
 const detailsSlidesWrapper = document.getElementById('detailsSlidesWrapper');
 const galleryImages = document.getElementById('galleryImages');
 
-// Featured Cars Elements
 const carsShowcase = document.getElementById('carsShowcase');
 
-// Testimonials Elements
 const testimonialNumber = document.getElementById('testimonialNumber');
 const companyBadge = document.getElementById('companyBadge');
 const testimonialQuote = document.getElementById('testimonialQuote');
@@ -51,17 +34,12 @@ const progressBar = document.getElementById('progressBar');
 const navPrev = document.getElementById('navPrev');
 const navNext = document.getElementById('navNext');
 
-// Theme Elements
 const themeToggle = document.getElementById('themeToggle');
 const footerThemeToggle = document.querySelector('.footer-theme-toggle');
 
-// Scroll Elements
 const scrollCard = document.querySelector('.scroll-card');
 const scrollTitle = document.querySelector('.scroll-title');
 
-// ========================================
-// CAR DATA - HERO SECTION
-// ========================================
 const carsArray = [
     {
         id: 'mustang',
@@ -153,9 +131,6 @@ const carsArray = [
     }
 ];
 
-// ========================================
-// TESTIMONIALS DATA
-// ========================================
 const testimonialsData = [
     {
         quote: "Absolutely amazing service! The Lexus LC was pristine and the team was incredibly professional.",
@@ -177,9 +152,6 @@ const testimonialsData = [
     }
 ];
 
-// ========================================
-// FEATURED CARS DATA
-// ========================================
 const featuredCars = [
     {
         id: 1,
@@ -213,9 +185,6 @@ const featuredCars = [
     }
 ];
 
-// ========================================
-// BURGER MENU FUNCTIONALITY
-// ========================================
 function initBurgerMenu() {
     if (!burgerMenu || !navMobile || !closeMenu) return;
     
@@ -231,7 +200,6 @@ function initBurgerMenu() {
         document.body.style.overflow = '';
     });
     
-    // Close menu when clicking on a link
     const mobileLinks = navMobile.querySelectorAll('a');
     mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -241,7 +209,6 @@ function initBurgerMenu() {
         });
     });
     
-    // Close menu when clicking outside
     document.addEventListener('click', (e) => {
         if (navMobile.classList.contains('active') && 
             !navMobile.contains(e.target) && 
@@ -253,15 +220,10 @@ function initBurgerMenu() {
     });
 }
 
-// ========================================
-// THEME FUNCTIONALITY
-// ========================================
 function initTheme() {
-    // Apply saved theme
     const currentTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     
-    // Theme toggle function
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -269,19 +231,16 @@ function initTheme() {
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         
-        // Add transition
         document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
         setTimeout(() => {
             document.body.style.transition = '';
         }, 300);
     }
     
-    // Add event listeners to all theme toggles
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
     if (footerThemeToggle) footerThemeToggle.addEventListener('click', toggleTheme);
     if (mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
     
-    // Keyboard shortcut for theme toggle
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
             e.preventDefault();
@@ -290,26 +249,19 @@ function initTheme() {
     });
 }
 
-// ========================================
-// CAROUSEL FUNCTIONALITY - RESPONSIVE
-// ========================================
 function initCarousel() {
     if (!carNamesWrapper || !carSlidesWrapper || !pageControlDots) return;
     
-    // Clear existing content
     carNamesWrapper.innerHTML = '';
     carSlidesWrapper.innerHTML = '';
     pageControlDots.innerHTML = '';
     
-    // Create car names, slides, and dots
     carsArray.forEach((car, index) => {
-        // Create car name element
         const carName = document.createElement('div');
         carName.className = 'car-name';
         carName.setAttribute('data-index', index);
         carName.setAttribute('data-id', car.id);
         
-        // Apply responsive styling
         const brandFontSize = isMobile ? car.textStyling.brandFontSizeActive : car.textStyling.brandFontSize;
         const modelFontSize = isMobile ? car.textStyling.modelFontSizeActive : car.textStyling.modelFontSize;
         
@@ -319,13 +271,11 @@ function initCarousel() {
         `;
         carNamesWrapper.appendChild(carName);
         
-        // Create car slide element
         const carSlide = document.createElement('div');
         carSlide.className = 'car-slide';
         carSlide.setAttribute('data-index', index);
         carSlide.setAttribute('data-id', car.id);
         
-        // Apply responsive image styling
         const marginTop = isMobile ? car.styling.marginTop : car.styling.marginTop;
         
         carSlide.innerHTML = `
@@ -333,7 +283,6 @@ function initCarousel() {
         `;
         carSlidesWrapper.appendChild(carSlide);
         
-        // Create dot element
         const dot = document.createElement('div');
         dot.className = 'dot';
         dot.setAttribute('data-index', index);
@@ -341,26 +290,21 @@ function initCarousel() {
         pageControlDots.appendChild(dot);
     });
     
-    // Update carousel to show initial slide
     updateCarousel();
 }
 
 function updateCarousel() {
     if (!carNamesWrapper || !carSlidesWrapper) return;
     
-    // Calculate responsive dimensions
-    const slideWidth = 100; // percentage
+    const slideWidth = 100;
     const nameHeight = isMobile ? 150 : 200;
     
-    // Move slides
     const slideOffset = -currentSlide * slideWidth;
     carSlidesWrapper.style.transform = `translateX(${slideOffset}%)`;
     
-    // Move names
     const nameOffset = -currentSlide * nameHeight;
     carNamesWrapper.style.transform = `translateY(${nameOffset}px)`;
     
-    // Update active states
     const carNames = document.querySelectorAll('.car-name');
     const dots = document.querySelectorAll('.dot');
     
@@ -383,26 +327,20 @@ function prevSlide() {
     updateCarousel();
 }
 
-// ========================================
-// DETAILS PAGE FUNCTIONALITY
-// ========================================
 function initDetailsPage() {
     if (!detailsBtn || !detailsPage || !backButton) return;
     
-    // Open details page
     detailsBtn.addEventListener('click', () => {
         updateDetailsPage();
         detailsPage.classList.add('active');
         document.body.style.overflow = 'hidden';
     });
     
-    // Close details page
     backButton.addEventListener('click', () => {
         detailsPage.classList.remove('active');
         document.body.style.overflow = '';
     });
     
-    // Close on escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && detailsPage.classList.contains('active')) {
             detailsPage.classList.remove('active');
@@ -410,7 +348,6 @@ function initDetailsPage() {
         }
     });
     
-    // Populate details page
     updateDetailsPage();
 }
 
@@ -419,12 +356,10 @@ function updateDetailsPage() {
     
     const currentCar = carsArray[currentSlide];
     
-    // Update car names in details page
     detailsCarNamesWrapper.innerHTML = '';
     detailsSlidesWrapper.innerHTML = '';
     galleryImages.innerHTML = '';
     
-    // Create details car name
     const carName = document.createElement('div');
     carName.className = 'car-name active';
     
@@ -437,13 +372,11 @@ function updateDetailsPage() {
     `;
     detailsCarNamesWrapper.appendChild(carName);
     
-    // Create details car slide
     const carSlide = document.createElement('div');
     carSlide.className = 'car-slide';
     carSlide.innerHTML = `<img src="${currentCar.image}" alt="${currentCar.name}">`;
     detailsSlidesWrapper.appendChild(carSlide);
     
-    // Update specs
     const specValues = document.querySelectorAll('.spec-value');
     if (specValues.length >= 3) {
         specValues[0].textContent = currentCar.specs.gas;
@@ -451,7 +384,6 @@ function updateDetailsPage() {
         specValues[2].textContent = currentCar.specs.horsepower;
     }
     
-    // Create gallery images
     currentCar.gallery.forEach((img, index) => {
         const galleryImage = document.createElement('div');
         galleryImage.className = 'gallery-image';
@@ -460,9 +392,6 @@ function updateDetailsPage() {
     });
 }
 
-// ========================================
-// FEATURED CARS FUNCTIONALITY
-// ========================================
 function initFeaturedCars() {
     if (!carsShowcase) return;
     
@@ -497,19 +426,13 @@ function initFeaturedCars() {
     `).join('');
 }
 
-// ========================================
-// TESTIMONIALS FUNCTIONALITY
-// ========================================
 function initTestimonials() {
     if (!testimonialNumber || !testimonialQuote) return;
     
-    // Initialize first testimonial
     updateTestimonial(0);
     
-    // Auto-rotate testimonials
     let testimonialInterval = setInterval(() => nextTestimonial(), 6000);
     
-    // Navigation
     if (navNext) {
         navNext.addEventListener('click', () => {
             clearInterval(testimonialInterval);
@@ -530,7 +453,6 @@ function initTestimonials() {
 function updateTestimonial(index) {
     const testimonial = testimonialsData[index];
     
-    // Update number
     const numberDisplay = testimonialNumber.querySelector('.number-display');
     if (numberDisplay) {
         numberDisplay.style.opacity = '0';
@@ -543,7 +465,6 @@ function updateTestimonial(index) {
         }, 300);
     }
     
-    // Update badge
     if (companyBadge) {
         const badgeText = companyBadge.querySelector('.badge-text');
         if (badgeText) {
@@ -557,7 +478,6 @@ function updateTestimonial(index) {
         }
     }
     
-    // Update quote
     if (testimonialQuote) {
         testimonialQuote.style.opacity = '0';
         testimonialQuote.style.transform = 'translateY(20px)';
@@ -568,13 +488,11 @@ function updateTestimonial(index) {
         }, 300);
     }
     
-    // Update author info
     if (authorName && authorRole) {
         authorName.textContent = testimonial.author;
         authorRole.textContent = testimonial.role;
     }
     
-    // Update progress bar
     if (progressBar) {
         const progressPercent = ((index + 1) / testimonialsData.length) * 100;
         progressBar.style.width = progressPercent + '%';
@@ -593,15 +511,11 @@ function prevTestimonial() {
     updateTestimonial(prevIndex);
 }
 
-// ========================================
-// SCROLL ANIMATIONS
-// ========================================
 function initScrollAnimations() {
     if (!scrollCard || !scrollTitle) return;
     
     window.addEventListener('scroll', handleScrollAnimations);
     
-    // Initial check
     animateOnScroll();
 }
 
@@ -621,13 +535,11 @@ function handleScrollAnimations() {
         ));
     }
     
-    // Update title
     const titleTranslate = scrollProgress * -200;
     const titleOpacity = 0.3 + (scrollProgress * 0.7);
     scrollTitle.style.transform = `translateY(${titleTranslate}px)`;
     scrollTitle.style.opacity = titleOpacity;
     
-    // Update card
     const rotateX = 35 * (1 - scrollProgress);
     const scale = isMobile 
         ? 0.7 + (scrollProgress * 0.25)
@@ -639,7 +551,6 @@ function handleScrollAnimations() {
         scale(${scale})
     `;
     
-    // Animate elements on scroll
     animateOnScroll();
 }
 
@@ -658,9 +569,6 @@ function animateOnScroll() {
     });
 }
 
-// ========================================
-// USER AUTHENTICATION
-// ========================================
 function checkUserAuthentication() {
     const user = JSON.parse(localStorage.getItem('user'));
     const signinBtn = document.getElementById('signinBtn');
@@ -708,15 +616,11 @@ function handleSignOut() {
     window.location.reload();
 }
 
-// ========================================
-// BOOKING FUNCTIONALITY
-// ========================================
 function bookCar(carId) {
     const user = localStorage.getItem('user');
     
     if (!user) {
         alert('Please sign in to book a car');
-        // Redirect to sign in page
         window.location.href = '/signin';
         return;
     }
@@ -725,35 +629,23 @@ function bookCar(carId) {
     alert(`Booking functionality coming soon!\nSelected Car ID: ${carId}`);
 }
 
-// Make function globally available
 window.bookCar = bookCar;
 
-// ========================================
-// RESPONSIVE HANDLING
-// ========================================
 function handleResponsive() {
-    // Update screen size variables
     isMobile = window.innerWidth <= 768;
     isTablet = window.innerWidth <= 1024 && window.innerWidth > 768;
     
-    // Update carousel for new screen size
     updateCarousel();
     
-    // Reinitialize details page for new screen size
     if (detailsPage.classList.contains('active')) {
         updateDetailsPage();
     }
 }
 
-// ========================================
-// EVENT LISTENERS SETUP
-// ========================================
 function setupEventListeners() {
-    // Carousel navigation
     if (arrowLeft) arrowLeft.addEventListener('click', prevSlide);
     if (arrowRight) arrowRight.addEventListener('click', nextSlide);
     
-    // Dot navigation
     if (pageControlDots) {
         pageControlDots.addEventListener('click', (e) => {
             if (e.target.classList.contains('dot')) {
@@ -763,14 +655,12 @@ function setupEventListeners() {
         });
     }
     
-    // Keyboard navigation for carousel
     document.addEventListener('keydown', (e) => {
         if (detailsPage && detailsPage.classList.contains('active')) return;
         if (e.key === 'ArrowLeft') prevSlide();
         if (e.key === 'ArrowRight') nextSlide();
     });
     
-    // Rent now buttons
     if (rentNowBtn) {
         rentNowBtn.addEventListener('click', () => {
             alert(`Rent ${carsArray[currentSlide].name} - Coming soon!`);
@@ -783,7 +673,6 @@ function setupEventListeners() {
         });
     }
     
-    // Touch swipe for mobile
     const slidesWrapper = document.querySelector('.slides-wrapper');
     if (slidesWrapper) {
         let touchStartX = 0;
@@ -800,7 +689,6 @@ function setupEventListeners() {
         });
     }
     
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -814,7 +702,6 @@ function setupEventListeners() {
         });
     });
     
-    // Resize handler with debounce
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
@@ -824,13 +711,9 @@ function setupEventListeners() {
     });
 }
 
-// ========================================
-// INITIALIZATION
-// ========================================
 function init() {
     console.log('🚗 Car Rental application initializing...');
     
-    // Initialize all modules
     initBurgerMenu();
     initTheme();
     initCarousel();
@@ -839,16 +722,13 @@ function init() {
     initTestimonials();
     initScrollAnimations();
     
-    // Check user authentication
     checkUserAuthentication();
     
-    // Setup event listeners
     setupEventListeners();
     
     console.log('✅ Car Rental application initialized successfully');
 }
 
-// Run initialization when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
