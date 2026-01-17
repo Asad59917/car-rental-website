@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Car = require('../models/car');
 
-// Get all cars
 router.get('/', async (req, res) => {
     try {
         const { status, brand, minPrice, maxPrice, featured } = req.query;
@@ -24,7 +23,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get a car by ID
 router.get('/:id', async (req, res) => {
     try {
         const car = await Car.findById(req.params.id);
@@ -35,7 +33,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Create a new car
 router.post('/', async (req, res) => {
     try {
         const newCar = new Car(req.body);
@@ -46,7 +43,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Update a car
 router.put('/:id', async (req, res) => {
     try {
         const car = await Car.findByIdAndUpdate(
@@ -61,7 +57,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Delete a car
 router.delete('/:id', async (req, res) => {
     try {
         const car = await Car.findByIdAndDelete(req.params.id);
@@ -72,7 +67,6 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Get available cars
 router.get('/status/available', async (req, res) => {
     try {
         const cars = await Car.find({ status: 'available' });
@@ -82,7 +76,6 @@ router.get('/status/available', async (req, res) => {
     }
 });
 
-// Update car status
 router.patch('/:id/status', async (req, res) => {
     try {
         const { status } = req.body;

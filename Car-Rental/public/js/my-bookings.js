@@ -456,9 +456,9 @@ window.viewBookingDetails = function(bookingId) {
         
         <div class="details-price">
             <h4>Total Amount</h4>
-            <div class="price-amount">$${booking.totalPrice}</div>
+            <div class="price-amount">AED ${booking.totalPrice}</div>
             <p style="margin-top: 0.5rem; opacity: 0.9;">
-                ${booking.totalDays} days × $${booking.pricePerDay}/day
+                ${booking.totalDays} days × AED ${booking.pricePerDay}Dhs/day
             </p>
         </div>
         

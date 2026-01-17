@@ -426,7 +426,7 @@ function renderFeaturedCars(cars) {
                 <div class="showcase-content">
                     <div class="showcase-header">
                         <h3>${car.brand} ${car.model}</h3>
-                        <div class="showcase-price">$${car.price}<span>/day</span></div>
+                        <div class="showcase-price">AED ${car.price}<span>Dhs/day</span></div>
                     </div>
                     <div class="showcase-specs">
                         <div class="spec-item">
@@ -910,11 +910,6 @@ function init() {
 
     setupEventListeners();
 
-    console.log('🚗 Car Rental application initialized');
-    console.log('📱 Mobile menu active');
-    console.log('🎨 Theme system active');
-    console.log('👤 User authentication checked');
-    console.log('⭐ Featured cars loading from database...');
 }
 
 if (document.readyState === 'loading') {

@@ -5,22 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Rental - Premium Vehicles</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="public/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <!-- Main View -->
         <div class="main-view">
-            <!-- Modern Header -->
             <header class="modern-header">
                 <div class="header-content">
-                    <!-- Logo -->
                     <a href="#home" class="logo-link">
                         <div class="logo">
                             <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -31,7 +26,6 @@
                         </div>
                     </a>
 
-                    <!-- Desktop Navigation -->
                     <nav class="desktop-nav">
                         <a href="/car-rental-website.html" class="nav-link active">Home</a>
                         <a href="/public/fleet.html" class="nav-link">Fleet</a>
@@ -39,9 +33,7 @@
                         <a href="/public/my-bookings.html" class="nav-link" id="myBookingsLink" style="display: none;">My Bookings</a>
                     </nav>
 
-                    <!-- Header Actions -->
                     <div class="header-actions">
-                        <!-- Theme Toggle -->
                         <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
                             <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="5"></circle>
@@ -59,7 +51,6 @@
                             </svg>
                         </button>
 
-                        <!-- Sign In Button (shown when not logged in) -->
                         <button class="btn-signin" id="signinBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -68,7 +59,6 @@
                             <span>Sign In</span>
                         </button>
 
-                        <!-- Mobile Menu Toggle -->
                         <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
                             <span class="hamburger-line"></span>
                             <span class="hamburger-line"></span>
@@ -77,7 +67,6 @@
                     </div>
                 </div>
 
-                <!-- Mobile Navigation Menu -->
                 <nav class="mobile-nav" id="mobileNav">
                     <div class="mobile-nav-content">
                         <a href="#home" class="mobile-nav-link active">
@@ -111,7 +100,6 @@
                         
                         <div class="mobile-nav-divider"></div>
                         
-                        <!-- Mobile Sign In (shown when not logged in) -->
                         <button class="mobile-nav-btn" id="mobileSigninBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -123,36 +111,27 @@
                     </div>
                 </nav>
 
-                <!-- Mobile Nav Overlay -->
                 <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
             </header>
 
-            <!-- Car Names -->
             <div class="car-names-container">
                 <div class="car-names" id="carNamesWrapper">
-                    <!-- Car names will be dynamically inserted here -->
                 </div>
             </div>
 
-            <!-- Slides -->
             <div class="slides-wrapper">
                 <div class="slides" id="carSlidesWrapper">
-                    <!-- Car slides will be dynamically inserted here -->
                 </div>
             </div>
 
-            <!-- Buttons -->
             <div class="buttons animate-in">
                 <button class="btn btn-primary rent-now-btn">Rent Now</button>
                 <button class="btn btn-secondary details-btn">Details</button>
             </div>
 
-            <!-- Page Control -->
             <div class="page-control" id="pageControlDots">
-                <!-- Dots will be dynamically inserted here -->
             </div>
 
-            <!-- Navigation Arrows -->
             <div class="nav-arrows">
                 <div class="arrow arrow-left">
                     <svg viewBox="0 0 24 24">
@@ -166,7 +145,6 @@
                 </div>
             </div>
 
-            <!-- Social Icons -->
             <div class="social-icons fade-in">
                 <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -186,7 +164,6 @@
             </div>
         </div>
 
-        <!-- Details Page -->
         <div class="details-page">
             <div class="back-button">
                 <svg viewBox="0 0 24 24">
@@ -194,7 +171,6 @@
                 </svg>
             </div>
 
-            <!-- Car Name (details view) -->
             <div class="car-names-container">
                 <div class="car-names" style="transform: translateY(-540px);">
                     <div class="car-name" data-index="0">
@@ -212,7 +188,6 @@
                 </div>
             </div>
 
-            <!-- Car Image (details view) -->
             <div class="slides-wrapper" style="top: 236px; left: calc(50% - 465px);">
                 <div class="slides">
                     <div class="car-slide">
@@ -221,7 +196,6 @@
                 </div>
             </div>
 
-            <!-- Car Specs -->
             <div class="car-specs">
                 <div class="specs-title">SPECS</div>
                 <div class="spec-card">
@@ -250,7 +224,6 @@
                 </div>
             </div>
 
-            <!-- Gallery -->
             <div class="gallery">
                 <div class="gallery-title">TAKE A LOOK</div>
                 <div class="gallery-images">
@@ -273,7 +246,6 @@
         </div>
     </div>
 
-    <!-- Scroll Animation Section -->
     <div class="scroll-animation-section">
         <div class="scroll-container">
             <div class="scroll-content">
@@ -294,19 +266,16 @@
         </div>
     </div>
 
-    <!-- Featured Cars Section -->
     <section class="featured-cars-section">
         <div class="featured-cars-container">
             <h2 class="section-title fade-in-up">Featured Vehicles</h2>
             <p class="section-subtitle fade-in-up">Discover our handpicked selection of premium cars</p>
             
             <div class="cars-showcase">
-                <!-- Cars will be loaded dynamically -->
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
     <section class="features-section">
         <div class="features-container">
             <h2 class="section-title fade-in-up">Why Choose Us</h2>
@@ -364,7 +333,6 @@
         </div>
     </section>
 
-    <!-- Testimonials Section -->
     <section class="testimonials-section">
         <div class="testimonials-container">
             <div class="testimonial-stage" id="testimonialStage">
@@ -426,7 +394,6 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="cta-section">
         <div class="cta-overlay"></div>
         <div class="cta-container">
@@ -441,7 +408,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-grid">
@@ -509,7 +475,6 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script src="js/home-script.js"></script>
 </body>
 </html>

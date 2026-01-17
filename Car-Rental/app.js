@@ -10,31 +10,22 @@ const User = require('./models/user');
 const app = express();
 const port = 1010;
 
-// ========================================
-// MULTER CONFIGURATION FOR IMAGE UPLOADS
-// ========================================
-
-// Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'public', 'uploads', 'cars');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log('✅ Created uploads directory:', uploadsDir);
 }
 
-// Configure multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadsDir);
     },
     filename: function (req, file, cb) {
-        // Generate unique filename
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const ext = path.extname(file.originalname);
         cb(null, 'car-' + uniqueSuffix + ext);
     }
 });
 
-// File filter to accept only images
 const fileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
@@ -44,46 +35,31 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Configure multer
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+        fileSize: 5 * 1024 * 1024
     }
 });
 
-// ========================================
-// MIDDLEWARE - IMPORTANT: ORDER MATTERS!
-// ========================================
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// CRITICAL: Serve static files BEFORE routes
-// This serves all files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve CSS files explicitly
 app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
 app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
 app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
 
-// Serve uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
-// Serve files from root directory (for car-rental-website.html assets)
 app.use(express.static(__dirname));
 
-// ========================================
-// MONGODB CONNECTION
-// ========================================
 mongoose.connect('mongodb://127.0.0.1:27017/carRental')
-    .then(() => console.log('✅ MongoDB connected successfully'))
-    .catch(err => console.log('❌ MongoDB connection error:', err));
+    .then(() => {})
+    .catch(err => {});
 
-// ========================================
-// API ROUTES (Before page routes)
-// ========================================
 const users = require('./routes/users');
 const cars = require('./routes/cars');
 const bookings = require('./routes/bookings');
@@ -94,9 +70,6 @@ app.use('/api/cars', cars);
 app.use('/api/bookings', bookings);
 app.use('/api/contact', contact);
 
-// ========================================
-// IMAGE UPLOAD ENDPOINT
-// ========================================
 app.post('/api/upload', upload.single('image'), (req, res) => {
     try {
         if (!req.file) {
@@ -104,7 +77,6 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
         }
         
         const imageUrl = `/uploads/cars/${req.file.filename}`;
-        console.log('✅ Image uploaded successfully:', imageUrl);
         
         res.json({
             message: 'Image uploaded successfully',
@@ -114,12 +86,10 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
             size: req.file.size
         });
     } catch (error) {
-        console.error('❌ Upload error:', error);
         res.status(500).json({ error: error.message });
     }
 });
 
-// Handle multer errors
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
@@ -132,10 +102,6 @@ app.use((error, req, res, next) => {
     }
     next();
 });
-
-// ========================================
-// AUTHENTICATION ROUTES (Before page routes)
-// ========================================
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -199,18 +165,11 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// ========================================
-// PAGE ROUTES (After API and static files)
-// ========================================
-
-// Home page - car-rental-website.html
 app.get('/', (req, res) => {
     const homePath = path.join(__dirname, 'car-rental-website.html');
     if (fs.existsSync(homePath)) {
-        console.log('✓ Serving car-rental-website.html');
         res.sendFile(homePath);
     } else {
-        console.error('✗ car-rental-website.html not found at:', homePath);
         res.status(404).send(`
             <h1>Home page not found</h1>
             <p>Expected location: ${homePath}</p>
@@ -219,85 +178,33 @@ app.get('/', (req, res) => {
     }
 });
 
-// Admin panel
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
-// Sign in page
 app.get('/signin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'signin.html'));
 });
 
-// Contact page
 app.get('/contact', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'contact.html'));
 });
 
-// Fleet page
 app.get('/fleet', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'fleet.html'));
 });
 
-// My Bookings page
 app.get('/my-bookings', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'my-bookings.html'));
 });
 
-// Booking page
 app.get('/booking', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'booking.html'));
 });
 
-// ========================================
-// START SERVER
-// ========================================
 app.listen(port, () => {
     console.log(`
-╔════════════════════════════════════════════════════════╗
-║           🚗 CAR RENTAL SERVER STARTED 🚗              ║
-╚════════════════════════════════════════════════════════╝
-
-✅ Server running on http://localhost:${port}
-✅ MongoDB connected to carRental database
-
-📍 MAIN PAGES:
-   - Home:        http://localhost:${port}/
-   - Sign In:     http://localhost:${port}/signin
-   - Contact:     http://localhost:${port}/contact
-   - Fleet:       http://localhost:${port}/fleet
-   - Booking:     http://localhost:${port}/booking
-   - My Bookings: http://localhost:${port}/my-bookings
-   - Admin:       http://localhost:${port}/admin
-
-🔐 AUTHENTICATION:
-   - POST /login
-   - POST /register
-
-📁 API ENDPOINTS:
-   - Users:       /users/*
-   - Cars:        /api/cars/*
-   - Bookings:    /api/bookings/*
-   - Contact:     /api/contact/*
-
-📤 UPLOADS:
-   - POST /api/upload
-   - Directory: ${uploadsDir}
-
-📧 CONTACT ENDPOINTS:
-   - POST   /api/contact
-   - GET    /api/contact
-   - GET    /api/contact/unread-count
-   - GET    /api/contact/:id
-   - PUT    /api/contact/:id/status
-   - DELETE /api/contact/:id
-
-💡 TROUBLESHOOTING:
-   - Static files served from: ${path.join(__dirname, 'public')}
-   - CSS files at: /css/*
-   - JS files at: /js/*
-   - Admin files at: /admin/*
-
-════════════════════════════════════════════════════════
+Server running on http://localhost:${port}
+Admin Panel: http://localhost:${port}/admin
 `);
 });

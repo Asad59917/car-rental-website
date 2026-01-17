@@ -1134,7 +1134,7 @@ function renderCarsGrid() {
                         <div class="car-name">${car.brand} ${car.model}</div>
                         <div style="font-size: 0.875rem; color: var(--admin-text-muted);">${car.year}</div>
                     </div>
-                    <div class="car-price">$${car.price}/day</div>
+                    <div class="car-price">AED${car.price}Dhs/day</div>
                 </div>
                 <div class="car-specs">
                     <div class="car-spec">
@@ -1186,7 +1186,7 @@ function renderBookingsTable() {
             <td>${new Date(booking.returnDate).toLocaleDateString()}</td>
             <td><span class="status-badge ${booking.status}">${booking.status}</span></td>
             <td>${booking.totalDays} days</td>
-            <td>$${booking.totalPrice}</td>
+            <td>AED ${booking.totalPrice}</td>
             <td>
                 ${booking.status === 'pending' ? `
                     <button class="action-btn confirm" onclick="confirmBooking('${booking._id}')" title="Confirm" style="color: var(--admin-success);">
@@ -1228,7 +1228,7 @@ function loadRecentBookings() {
             <td>${carName}</td>
             <td>${new Date(booking.pickupDate).toLocaleDateString()}</td>
             <td><span class="status-badge ${booking.status}">${booking.status}</span></td>
-            <td>$${booking.totalPrice}</td>
+            <td>AED ${booking.totalPrice}</td>
         </tr>
     `;
     }).join('');
@@ -1326,7 +1326,7 @@ function openBookingModal(bookingId = null) {
     const availableCars = state.cars.filter(car => car.status === 'available');
     carSelect.innerHTML = '<option value="">Select Car</option>' +
         availableCars.map(car => 
-            `<option value="${car._id || car.id}">${car.brand} ${car.model} - $${car.price}/day</option>`
+            `<option value="${car._id || car.id}">${car.brand} ${car.model} - AED ${car.price}Dhs/day</option>`
         ).join('');
     
     // Set minimum dates
@@ -1760,10 +1760,10 @@ window.viewBookingDetails = function(bookingId) {
                     </h3>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
                         <div><strong>Total Days:</strong><br>${booking.totalDays}</div>
-                        <div><strong>Price/Day:</strong><br>$${booking.pricePerDay}</div>
+                        <div><strong>Price/Day:</strong><br>AED${booking.pricePerDay}</div>
                         <div style="grid-column: 1 / -1; text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid rgba(255,255,255,0.3);">
                             <strong style="font-size: 1.2rem;">Total Amount:</strong><br>
-                            <span style="font-size: 2.5rem; font-weight: bold;">$${booking.totalPrice}</span>
+                            <span style="font-size: 2.5rem; font-weight: bold;">AED ${booking.totalPrice}</span>
                         </div>
                     </div>
                 </div>
@@ -2084,17 +2084,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
-// ========================================
-// INITIALIZATION COMPLETE
-// ========================================
-console.log('✅✅✅ Admin Dashboard Script Loaded Successfully!');
-console.log('📊 Features Active:');
-console.log('   - User Management');
-console.log('   - Car Management (with Image Upload)');
-console.log('   - Booking Management (Confirm/Reject/View/Delete)');
-console.log('   - Contact Notifications (Real-time with Badge)');
-console.log('   - Dashboard Stats');
-console.log('   - Quick Actions');
-console.log('   - Theme Toggle');
-console.log('   - Responsive Sidebar');

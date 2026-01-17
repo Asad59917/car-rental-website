@@ -152,7 +152,7 @@ function renderCarCard() {
         </div>
         <div class="car-price-display">
             <p class="price-label">Price per day</p>
-            <p class="price-amount">$${selectedCar.price}</p>
+            <p class="price-amount">AED ${selectedCar.price}</p>
             <p class="price-period">/day</p>
         </div>
     `;
@@ -271,41 +271,41 @@ function calculatePrice() {
     if (insurance.checked) {
         const insuranceCost = parseInt(insurance.value) * totalDays;
         addonsTotal += insuranceCost;
-        addonsText.push(`Insurance: $${insuranceCost}`);
+        addonsText.push(`Insurance: AED ${insuranceCost}`);
     }
     
     if (gps.checked) {
         const gpsCost = parseInt(gps.value) * totalDays;
         addonsTotal += gpsCost;
-        addonsText.push(`GPS: $${gpsCost}`);
+        addonsText.push(`GPS: AED ${gpsCost}`);
     }
     
     if (childSeat.checked) {
         const seatCost = parseInt(childSeat.value) * totalDays;
         addonsTotal += seatCost;
-        addonsText.push(`Child Seat: $${seatCost}`);
+        addonsText.push(`Child Seat: AED ${seatCost}`);
     }
     
     if (driver.checked) {
         const driverCost = parseInt(driver.value);
         addonsTotal += driverCost;
-        addonsText.push(`Additional Driver: $${driverCost}`);
+        addonsText.push(`Additional Driver: AED ${driverCost}`);
     }
     
     // Update display
     document.getElementById('daysCount').textContent = totalDays;
-    document.getElementById('basePrice').textContent = `$${basePrice}`;
+    document.getElementById('basePrice').textContent = `AED ${basePrice}`;
     
     const addonsRow = document.getElementById('addonsRow');
     if (addonsTotal > 0) {
         addonsRow.style.display = 'flex';
-        document.getElementById('addonsPrice').textContent = `$${addonsTotal}`;
+        document.getElementById('addonsPrice').textContent = `AED ${addonsTotal}`;
     } else {
         addonsRow.style.display = 'none';
     }
     
     const totalPrice = basePrice + addonsTotal;
-    document.getElementById('totalPrice').textContent = `$${totalPrice}`;
+    document.getElementById('totalPrice').textContent = `AED ${totalPrice}`;
 }
 
 // ========================================

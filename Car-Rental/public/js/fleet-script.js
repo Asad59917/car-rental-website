@@ -220,8 +220,8 @@ function renderCars() {
                 <div class="car-card-header">
                     <h3 class="car-brand-model">${car.brand} ${car.model}</h3>
                     <div class="car-price">
-                        <span class="price-amount">$${car.price}</span>
-                        <span class="price-period">/day</span>
+                        <span class="price-amount">AED ${car.price}</span>
+                        <span class="price-period">Dhs/day</span>
                     </div>
                 </div>
                 <div class="car-specs-grid">
@@ -410,7 +410,7 @@ function openCarModal(carId) {
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 2rem; background: var(--bg-primary); border-radius: 1rem;">
                 <div>
                     <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 0.5rem;">Price per day</p>
-                    <p style="font-size: 3rem; font-weight: 700; color: var(--accent-primary);">$${car.price}</p>
+                    <p style="font-size: 3rem; font-weight: 700; color: var(--accent-primary);">${car.price}Dhs</p>
                 </div>
                 <button class="btn-book" style="padding: 1.25rem 2.5rem; font-size: 1.1rem;" onclick="bookCar(event, '${car._id || car.id}')">
                     Book Now
