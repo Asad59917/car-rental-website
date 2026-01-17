@@ -1,5 +1,3 @@
-/* My Bookings Specific Styles - Updated */
-
 body {
     padding-top: 76px;
 }
@@ -15,7 +13,6 @@ body {
     margin: 0 auto;
 }
 
-/* ==================== PAGE HEADER ==================== */
 .page-header {
     text-align: center;
     margin-bottom: 3rem;
@@ -45,7 +42,6 @@ body {
     color: var(--text-secondary);
 }
 
-/* ==================== FILTER SECTION ==================== */
 .filter-section {
     display: flex;
     gap: 1.5rem;
@@ -97,7 +93,6 @@ body {
     box-shadow: 0 0 0 3px rgba(49, 69, 89, 0.1);
 }
 
-/* ==================== BOOKINGS LIST ==================== */
 .bookings-list {
     display: flex;
     flex-direction: column;
@@ -286,7 +281,6 @@ body {
     cursor: not-allowed;
 }
 
-/* ==================== LOADING & EMPTY STATES ==================== */
 .loading-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -354,7 +348,6 @@ body {
     box-shadow: 0 4px 12px var(--shadow-medium);
 }
 
-/* ==================== MODALS ==================== */
 .modal {
     display: none;
     position: fixed;
@@ -495,7 +488,6 @@ body {
     background: var(--border-color);
 }
 
-/* ==================== DETAILS MODAL ==================== */
 .details-header {
     text-align: center;
     padding-bottom: 2rem;
@@ -630,7 +622,6 @@ body {
     font-weight: 800;
 }
 
-/* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
     body {
         padding-top: 68px;

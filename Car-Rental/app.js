@@ -5,10 +5,14 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const { OAuth2Client } = require('google-auth-library');
 const User = require('./models/user');
 
 const app = express();
 const port = 1010;
+
+const GOOGLE_CLIENT_ID = '135800377028-s25a01piss36ae0bibjhnmadmai78r2t.apps.googleusercontent.com';
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const uploadsDir = path.join(__dirname, 'public', 'uploads', 'cars');
 if (!fs.existsSync(uploadsDir)) {
@@ -57,8 +61,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 app.use(express.static(__dirname));
 
 mongoose.connect('mongodb://127.0.0.1:27017/carRental')
-    .then(() => {})
-    .catch(err => {});
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 const users = require('./routes/users');
 const cars = require('./routes/cars');
@@ -103,6 +107,58 @@ app.use((error, req, res, next) => {
     next();
 });
 
+app.post('/auth/google', async (req, res) => {
+    try {
+        const { credential } = req.body;
+
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: GOOGLE_CLIENT_ID
+        });
+
+        const payload = ticket.getPayload();
+        const { email, name, sub: googleId, picture } = payload;
+
+        let user = await User.findOne({ email });
+
+        if (user) {
+            if (!user.googleId) {
+                user.googleId = googleId;
+                user.profilePicture = picture;
+                user.isVerified = true;
+                user.authProvider = 'google';
+                await user.save();
+            }
+        } else {
+            user = new User({
+                name,
+                email,
+                googleId,
+                profilePicture: picture,
+                isVerified: true,
+                authProvider: 'google'
+            });
+            await user.save();
+        }
+
+        res.status(200).json({
+            message: 'Google authentication successful',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                profilePicture: user.profilePicture
+            }
+        });
+
+    } catch (error) {
+        console.error('Google auth error:', error);
+        res.status(401).json({
+            error: 'Google authentication failed'
+        });
+    }
+});
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -113,6 +169,12 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
+        if (user.authProvider === 'google' && !user.password) {
+            return res.status(401).json({ 
+                error: 'This account uses Google Sign-In. Please use "Continue with Google" to log in.' 
+            });
+        }
+
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (isMatch) {
@@ -121,7 +183,8 @@ app.post('/login', async (req, res) => {
                 user: {
                     id: user._id,
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    profilePicture: user.profilePicture
                 }
             });
         } else {
@@ -147,7 +210,8 @@ app.post('/register', async (req, res) => {
         const newUser = new User({ 
             name, 
             email, 
-            password: hashedPassword 
+            password: hashedPassword,
+            authProvider: 'local'
         });
         
         await newUser.save();
@@ -204,7 +268,8 @@ app.get('/booking', (req, res) => {
 
 app.listen(port, () => {
     console.log(`
-Server running on http://localhost:${port}
-Admin Panel: http://localhost:${port}/admin
+Car Rental Server Running                
+Server:http://localhost:${port}                
+Admin Panel: http://localhost:${port}/admin                  
 `);
 });

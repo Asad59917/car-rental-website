@@ -1,4 +1,3 @@
-/* ========== RESET & BASE STYLES ========== */
 * {
     margin: 0;
     padding: 0;
@@ -35,7 +34,6 @@ body {
     overflow-y: auto;
 }
 
-/* ========== BACKGROUND ANIMATIONS ========== */
 .background-shape {
     position: absolute;
     border-radius: 50%;
@@ -86,7 +84,6 @@ body {
     }
 }
 
-/* ========== CONTAINER ========== */
 .container {
     width: 100%;
     max-width: 480px;
@@ -95,7 +92,6 @@ body {
     margin: 40px auto;
 }
 
-/* ========== AUTH CARD ========== */
 .auth-card {
     background: var(--white);
     border-radius: 24px;
@@ -116,7 +112,6 @@ body {
     }
 }
 
-/* ========== BACK BUTTON ========== */
 .back-button {
     position: fixed;
     top: 20px;
@@ -164,7 +159,6 @@ body {
     }
 }
 
-/* ========== TOGGLE BUTTONS ========== */
 .toggle-container {
     display: flex;
     gap: 8px;
@@ -210,7 +204,6 @@ body {
     transform: translateX(calc(100% + 8px));
 }
 
-/* ========== FORM CONTAINER ========== */
 .form-container {
     padding: 20px 30px 40px;
     display: none;
@@ -232,7 +225,6 @@ body {
     }
 }
 
-/* ========== FORM HEADER ========== */
 .form-header {
     text-align: center;
     margin-bottom: 32px;
@@ -278,7 +270,6 @@ body {
     font-size: 14px;
 }
 
-/* ========== INPUT GROUPS ========== */
 .input-group {
     position: relative;
     margin-bottom: 24px;
@@ -348,7 +339,6 @@ body {
     color: var(--primary-color);
 }
 
-/* ========== FORM OPTIONS ========== */
 .form-options {
     display: flex;
     justify-content: space-between;
@@ -411,7 +401,6 @@ body {
     text-decoration: underline;
 }
 
-/* ========== SUBMIT BUTTON ========== */
 .submit-btn {
     width: 100%;
     padding: 16px;
@@ -464,7 +453,6 @@ body {
     transform: translateX(4px);
 }
 
-/* ========== DIVIDER ========== */
 .divider {
     display: flex;
     align-items: center;
@@ -482,7 +470,6 @@ body {
     background: #E8E8E8;
 }
 
-/* ========== GOOGLE BUTTON ========== */
 .google-btn {
     width: 100%;
     padding: 14px;
@@ -512,7 +499,6 @@ body {
     height: 20px;
 }
 
-/* ========== ERROR MESSAGE ========== */
 .error-message {
     color: var(--danger-color);
     font-size: 14px;
@@ -532,7 +518,6 @@ body {
     75% { transform: translateX(10px); }
 }
 
-/* ========== LOADING STATE ========== */
 .submit-btn.loading {
     pointer-events: none;
     opacity: 0.7;
@@ -565,7 +550,6 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* ========== SUCCESS STATE ========== */
 .submit-btn.success {
     background: linear-gradient(135deg, var(--success-color), #1E8449);
     position: relative;
@@ -629,7 +613,6 @@ body {
     }
 }
 
-/* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 576px) {
     body {
         padding: 10px;

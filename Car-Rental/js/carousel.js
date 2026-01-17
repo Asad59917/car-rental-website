@@ -4,7 +4,7 @@ const carsArray = [
         brand: 'FORD',
         model: 'MUSTANG',
         name: 'Ford Mustang',
-        image: 'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
+        image: 'images/2024_Ford_Mustang.png',  // ✅ Updated
         styling: {
             width: '100%',
             scale: '1',
@@ -36,10 +36,10 @@ const carsArray = [
             horsepower: '450'
         },
         gallery: [
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e'
+            'images/2024_Ford_Mustang.png',  // ✅ Updated
+            'images/2024_Ford_Mustang.png',
+            'images/2024_Ford_Mustang.png',
+            'images/2024_Ford_Mustang.png'
         ]
     },
     {
@@ -47,7 +47,7 @@ const carsArray = [
         brand: 'AUDI',
         model: 'A3',
         name: 'Audi A3',
-        image: 'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
+        image: 'images/Audi_A3.png',  // ✅ Updated
         styling: {
             width: '110%',
             scale: '1',
@@ -79,10 +79,10 @@ const carsArray = [
             horsepower: '240'
         },
         gallery: [
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557'
+            'images/Audi_A3.png',  // ✅ Updated
+            'images/Audi_A3.png',
+            'images/Audi_A3.png',
+            'images/Audi_A3.png'
         ]
     },
     {
@@ -90,7 +90,7 @@ const carsArray = [
         brand: 'LEXUS',
         model: 'LC SERIES',
         name: 'Lexus LC Series',
-        image: 'https://www.figma.com/api/mcp/asset/9ad5e5ca-f5dd-43f6-a06b-ba61121fc9d8',
+        image: 'images/2024_Lexus_LC.png',  // ✅ Updated
         styling: {
             width: '100%',
             scale: '1',
@@ -122,10 +122,10 @@ const carsArray = [
             horsepower: '335'
         },
         gallery: [
-            'https://www.figma.com/api/mcp/asset/cf15af61-3975-4919-a235-e3d240d020fa',
-            'https://www.figma.com/api/mcp/asset/b950460d-56da-4f41-8e39-45c0c155e5e5',
-            'https://www.figma.com/api/mcp/asset/4ff17011-8d4b-476f-b923-299c50e3b1bc',
-            'https://www.figma.com/api/mcp/asset/82b4a2a2-6cae-426e-b406-8c949ec746a2'
+            'images/2024_Lexus_LC.png',  // ✅ Updated (you may want different angles if you have them)
+            'images/2024_Lexus_LC.png',
+            'images/2024_Lexus_LC.png',
+            'images/2024_Lexus_LC.png'
         ]
     }
 ];

@@ -1,11 +1,3 @@
-// ========================================
-// ADMIN DASHBOARD - COMPLETE UPDATED VERSION
-// With Image Upload Support + Contact Notifications
-// ========================================
-
-// ========================================
-// STATE MANAGEMENT
-// ========================================
 const state = {
     currentSection: 'dashboard',
     users: [],
@@ -20,9 +12,6 @@ const state = {
     uploadedImageFile: null
 };
 
-// ========================================
-// DOM ELEMENTS
-// ========================================
 const elements = {
     sidebar: document.getElementById('sidebar'),
     sidebarToggle: document.getElementById('sidebarToggle'),
@@ -49,9 +38,6 @@ const elements = {
     totalBookings: document.getElementById('totalBookings')
 };
 
-// ========================================
-// INITIALIZATION
-// ========================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Admin Dashboard Starting...');
     initializeEventListeners();
@@ -65,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeEventListeners() {
     console.log('📋 Setting up event listeners...');
     
-    // Sidebar toggles
     if (elements.sidebarToggle) {
         elements.sidebarToggle.addEventListener('click', toggleSidebar);
     }
@@ -73,7 +58,6 @@ function initializeEventListeners() {
         elements.mobileMenuToggle.addEventListener('click', toggleMobileSidebar);
     }
     
-    // Navigation items
     elements.navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
@@ -82,27 +66,22 @@ function initializeEventListeners() {
         });
     });
     
-    // Theme toggle
     if (elements.themeToggle) {
         elements.themeToggle.addEventListener('click', toggleTheme);
     }
     
-    // Logout
     if (elements.logoutBtn) {
         elements.logoutBtn.addEventListener('click', handleLogout);
     }
     
-    // Notification button
     if (elements.notificationBtn) {
         elements.notificationBtn.addEventListener('click', openNotificationPanel);
     }
     
-    // Modal close buttons
     document.querySelectorAll('.modal-close').forEach(btn => {
         btn.addEventListener('click', closeAllModals);
     });
     
-    // Close modals on backdrop click
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -111,7 +90,6 @@ function initializeEventListeners() {
         });
     });
     
-    // Add buttons (in section headers)
     const addUserBtn = document.getElementById('addUserBtn');
     const addCarBtn = document.getElementById('addCarBtn');
     const addBookingBtn = document.getElementById('addBookingBtn');
@@ -129,9 +107,6 @@ function initializeEventListeners() {
         console.log('✅ Add Booking button connected');
     }
     
-    // ========================================
-    // QUICK ACTION BUTTONS (Dashboard)
-    // ========================================
     document.querySelectorAll('.quick-action-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const action = btn.dataset.action;
@@ -157,17 +132,12 @@ function initializeEventListeners() {
     });
     console.log('✅ Quick Action buttons connected');
     
-    // Form submissions
     if (elements.userForm) elements.userForm.addEventListener('submit', handleUserSubmit);
     if (elements.carForm) elements.carForm.addEventListener('submit', handleCarSubmit);
     if (elements.bookingForm) elements.bookingForm.addEventListener('submit', handleBookingSubmit);
     
-    // ========================================
-    // IMAGE UPLOAD EVENT LISTENERS
-    // ========================================
     setupImageUploadListeners();
     
-    // Close modal on Escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeAllModals();
@@ -178,9 +148,6 @@ function initializeEventListeners() {
     console.log('✅ Event listeners configured');
 }
 
-// ========================================
-// CONTACT NOTIFICATION SYSTEM
-// ========================================
 async function loadContactMessages() {
     try {
         const response = await fetch('/api/contact');
@@ -216,20 +183,19 @@ async function updateNotificationBadge() {
 }
 
 function startNotificationPolling() {
-    // Check for new notifications every 30 seconds
+
     updateNotificationBadge();
     setInterval(updateNotificationBadge, 30000);
 }
 
 function openNotificationPanel() {
-    // Remove any existing panel
+
     const existingPanel = document.getElementById('notificationPanel');
     if (existingPanel) {
         existingPanel.remove();
         return;
     }
     
-    // Load latest messages
     loadContactMessages().then(() => {
         const panel = document.createElement('div');
         panel.id = 'notificationPanel';
@@ -264,7 +230,6 @@ function openNotificationPanel() {
         
         document.body.appendChild(panel);
         
-        // Tab switching
         panel.querySelectorAll('.notification-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 panel.querySelectorAll('.notification-tab').forEach(t => t.classList.remove('active'));
@@ -276,7 +241,6 @@ function openNotificationPanel() {
             });
         });
         
-        // Close when clicking outside
         setTimeout(() => {
             document.addEventListener('click', handleOutsideClick);
         }, 100);
@@ -360,7 +324,6 @@ async function viewContactMessage(messageId) {
         
         const message = await response.json();
         
-        // Mark as read if unread
         if (message.status === 'unread') {
             await fetch(`/api/contact/${messageId}/status`, {
                 method: 'PUT',
@@ -368,14 +331,11 @@ async function viewContactMessage(messageId) {
                 body: JSON.stringify({ status: 'read' })
             });
             
-            // Update badge
             updateNotificationBadge();
         }
         
-        // Close notification panel
         closeNotificationPanel();
         
-        // Show message details modal
         showContactMessageModal(message);
         
     } catch (error) {
@@ -511,23 +471,19 @@ window.deleteContactMessage = async function(messageId) {
     }
 };
 
-// ========================================
-// IMAGE UPLOAD FUNCTIONS
-// ========================================
 function setupImageUploadListeners() {
-    // Image source toggle (URL vs Upload)
+  
     const imageSourceRadios = document.querySelectorAll('input[name="imageSource"]');
     imageSourceRadios.forEach(radio => {
         radio.addEventListener('change', handleImageSourceChange);
     });
     
-    // File input change
+    
     const carImageFile = document.getElementById('carImageFile');
     if (carImageFile) {
         carImageFile.addEventListener('change', handleImageFileSelect);
     }
     
-    // Drag and drop
     const dropZone = document.getElementById('imageDropZone');
     if (dropZone) {
         dropZone.addEventListener('dragover', handleDragOver);
@@ -538,7 +494,6 @@ function setupImageUploadListeners() {
         });
     }
     
-    // URL input preview
     const carImageUrl = document.getElementById('carImage');
     if (carImageUrl) {
         carImageUrl.addEventListener('input', debounce(handleUrlPreview, 500));
@@ -562,7 +517,6 @@ function handleImageSourceChange(e) {
         carImageUrl.value = '';
     }
     
-    // Clear preview
     clearImagePreview();
 }
 
@@ -593,7 +547,6 @@ function handleDrop(e) {
     const file = e.dataTransfer.files[0];
     if (file) {
         validateAndPreviewImage(file);
-        // Update the file input
         const fileInput = document.getElementById('carImageFile');
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
@@ -602,24 +555,20 @@ function handleDrop(e) {
 }
 
 function validateAndPreviewImage(file) {
-    // Validate file type
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
         showNotification('Please select a valid image file (JPEG, PNG, GIF, or WebP)', 'error');
         return false;
     }
     
-    // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
         showNotification('Image size must be less than 5MB', 'error');
         return false;
     }
     
-    // Store the file
     state.uploadedImageFile = file;
     
-    // Preview the image
     const reader = new FileReader();
     reader.onload = function(e) {
         showImagePreview(e.target.result, file.name, formatFileSize(file.size));
@@ -632,7 +581,7 @@ function validateAndPreviewImage(file) {
 function handleUrlPreview() {
     const url = document.getElementById('carImage').value;
     if (url) {
-        // Test if URL is valid image
+    
         const img = new Image();
         img.onload = function() {
             showImagePreview(url, 'URL Image', 'External');
@@ -701,9 +650,6 @@ function debounce(func, wait) {
     };
 }
 
-// ========================================
-// GENERATE REPORT FUNCTION
-// ========================================
 function generateReport() {
     const totalRevenue = state.bookings.reduce((sum, booking) => {
         if (booking.status === 'confirmed' || booking.status === 'completed') {
@@ -872,9 +818,6 @@ End of Report
     showNotification('Report downloaded successfully', 'success');
 };
 
-// ========================================
-// AUTHENTICATION
-// ========================================
 function checkAuthStatus() {
     const adminUser = localStorage.getItem('adminUser');
     if (!adminUser) {
@@ -891,14 +834,10 @@ function handleLogout() {
     }
 }
 
-// ========================================
-// NAVIGATION
-// ========================================
 function navigateToSection(section) {
     console.log('📍 Navigating to:', section);
     state.currentSection = section;
     
-    // Update active nav item
     elements.navItems.forEach(item => {
         item.classList.remove('active');
         if (item.dataset.section === section) {
@@ -906,7 +845,6 @@ function navigateToSection(section) {
         }
     });
     
-    // Update content sections
     elements.contentSections.forEach(contentSection => {
         contentSection.classList.remove('active');
         if (contentSection.id === `${section}-section`) {
@@ -914,7 +852,6 @@ function navigateToSection(section) {
         }
     });
     
-    // Update page title
     const titles = {
         dashboard: 'Dashboard',
         users: 'User Management',
@@ -928,7 +865,6 @@ function navigateToSection(section) {
         elements.pageTitle.textContent = titles[section] || 'Dashboard';
     }
     
-    // Load section-specific data
     loadSectionData(section);
 }
 
@@ -952,9 +888,6 @@ function loadSectionData(section) {
     }
 }
 
-// ========================================
-// SIDEBAR
-// ========================================
 function toggleSidebar() {
     if (elements.sidebar) {
         elements.sidebar.classList.toggle('collapsed');
@@ -967,9 +900,6 @@ function toggleMobileSidebar() {
     }
 }
 
-// ========================================
-// THEME MANAGEMENT
-// ========================================
 function initializeTheme() {
     const savedTheme = localStorage.getItem('adminTheme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -992,9 +922,6 @@ function updateThemeIcon(theme) {
     }
 }
 
-// ========================================
-// DATA LOADING
-// ========================================
 async function loadDashboardData() {
     console.log('📊 Loading dashboard data...');
     try {
@@ -1065,9 +992,6 @@ async function loadBookings() {
     }
 }
 
-// ========================================
-// DASHBOARD STATS
-// ========================================
 function updateDashboardStats() {
     if (elements.totalUsers) {
         elements.totalUsers.textContent = state.users.length;
@@ -1080,11 +1004,6 @@ function updateDashboardStats() {
     }
 }
 
-// Continuing admin-script.js (Part 2)...
-
-// ========================================
-// USERS TABLE RENDERING
-// ========================================
 function renderUsersTable() {
     if (!elements.usersTable) return;
     
@@ -1112,9 +1031,6 @@ function renderUsersTable() {
     `).join('');
 }
 
-// ========================================
-// CARS GRID RENDERING
-// ========================================
 function renderCarsGrid() {
     if (!elements.carsGrid) return;
     
@@ -1162,9 +1078,6 @@ function renderCarsGrid() {
     }).join('');
 }
 
-// ========================================
-// BOOKINGS TABLE RENDERING
-// ========================================
 function renderBookingsTable() {
     if (!elements.bookingsTable) return;
     
@@ -1234,9 +1147,6 @@ function loadRecentBookings() {
     }).join('');
 }
 
-// ========================================
-// MODAL FUNCTIONS
-// ========================================
 function openUserModal(userId = null) {
     const modal = elements.userModal;
     const title = document.getElementById('userModalTitle');
@@ -1266,11 +1176,9 @@ function openCarModal(carId = null) {
     const modal = elements.carModal;
     const title = document.getElementById('carModalTitle');
     
-    // Reset image upload state
     state.uploadedImageFile = null;
     clearImagePreview();
     
-    // Reset to URL mode by default
     const urlRadio = document.querySelector('input[name="imageSource"][value="url"]');
     if (urlRadio) {
         urlRadio.checked = true;
@@ -1295,7 +1203,6 @@ function openCarModal(carId = null) {
             document.getElementById('carBadge').value = car.badge || 'Featured';
             document.getElementById('carCategory').value = car.category || 'sedan';
             
-            // Show existing image preview
             if (car.image) {
                 showImagePreview(car.image, 'Current Image', 'Existing');
             }
@@ -1316,12 +1223,10 @@ function openBookingModal(bookingId = null) {
     const modal = elements.bookingModal;
     const title = document.getElementById('bookingModalTitle');
     
-    // Populate customer dropdown
     const customerSelect = document.getElementById('bookingCustomer');
     customerSelect.innerHTML = '<option value="">Select Customer</option>' +
         state.users.map(user => `<option value="${user._id}">${user.name} (${user.email})</option>`).join('');
     
-    // Populate car dropdown (only available cars)
     const carSelect = document.getElementById('bookingCar');
     const availableCars = state.cars.filter(car => car.status === 'available');
     carSelect.innerHTML = '<option value="">Select Car</option>' +
@@ -1329,7 +1234,6 @@ function openBookingModal(bookingId = null) {
             `<option value="${car._id || car.id}">${car.brand} ${car.model} - AED ${car.price}Dhs/day</option>`
         ).join('');
     
-    // Set minimum dates
     const today = new Date().toISOString().split('T')[0];
     const startDateInput = document.getElementById('bookingStartDate');
     const endDateInput = document.getElementById('bookingEndDate');
@@ -1364,9 +1268,6 @@ function closeAllModals() {
     clearImagePreview();
 }
 
-// ========================================
-// FORM SUBMISSIONS
-// ========================================
 async function handleUserSubmit(e) {
     e.preventDefault();
     
@@ -1376,7 +1277,6 @@ async function handleUserSubmit(e) {
         password: document.getElementById('userPassword').value
     };
     
-    // Remove empty password for updates
     if (state.currentUser && !formData.password) {
         delete formData.password;
     }
@@ -1417,14 +1317,13 @@ async function handleCarSubmit(e) {
     const imageSource = document.querySelector('input[name="imageSource"]:checked')?.value || 'url';
     let imageUrl = document.getElementById('carImage').value;
     
-    // Show loading state
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     
     try {
-        // If upload mode and file selected, upload the image first
+        
         if (imageSource === 'upload' && state.uploadedImageFile) {
             const uploadFormData = new FormData();
             uploadFormData.append('image', state.uploadedImageFile);
@@ -1444,7 +1343,6 @@ async function handleCarSubmit(e) {
             }
         }
         
-        // Validate image URL
         if (!imageUrl) {
             throw new Error('Please provide an image URL or upload an image');
         }
@@ -1491,7 +1389,7 @@ async function handleCarSubmit(e) {
         console.error('Error saving car:', error);
         showNotification(error.message || 'Network error', 'error');
     } finally {
-        // Reset button state
+        
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnText;
     }
@@ -1571,9 +1469,6 @@ async function handleBookingSubmit(e) {
     }
 }
 
-// ========================================
-// USER CRUD OPERATIONS
-// ========================================
 window.editUser = function(userId) {
     console.log('Editing user:', userId);
     openUserModal(userId);
@@ -1599,9 +1494,6 @@ window.deleteUser = async function(userId) {
     }
 };
 
-// ========================================
-// CAR CRUD OPERATIONS
-// ========================================
 window.editCar = function(carId) {
     console.log('Editing car:', carId);
     const car = state.cars.find(c => c._id === carId || c.id === carId);
@@ -1630,9 +1522,6 @@ window.deleteCar = async function(carId) {
     }
 };
 
-// ========================================
-// BOOKING MANAGEMENT FUNCTIONS
-// ========================================
 window.confirmBooking = async function(bookingId) {
     const adminNotes = prompt('Add confirmation notes (optional):');
     
@@ -1860,11 +1749,8 @@ window.deleteBooking = async function(bookingId) {
     }
 };
 
-// ========================================
-// NOTIFICATIONS
-// ========================================
 function showNotification(message, type = 'info') {
-    // Remove any existing notifications
+
     const existingNotifications = document.querySelectorAll('.notification');
     existingNotifications.forEach(n => n.remove());
     
@@ -1919,7 +1805,6 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
-// Add animations and styles
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {

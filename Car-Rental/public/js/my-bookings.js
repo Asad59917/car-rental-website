@@ -1,12 +1,3 @@
-/**
- * MY BOOKINGS PAGE - UPDATED
- * User booking management and tracking with modern header
- */
-
-// ========================================
-// MOBILE MENU MODULE
-// ========================================
-
 function initMobileMenu() {
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const mobileNav = document.getElementById('mobileNav');
@@ -61,9 +52,6 @@ function initMobileMenu() {
     });
 }
 
-// ========================================
-// HEADER SCROLL EFFECT
-// ========================================
 
 function initHeaderScrollEffect() {
     const header = document.querySelector('.modern-header');
@@ -78,42 +66,27 @@ function initHeaderScrollEffect() {
     });
 }
 
-// ========================================
-// STATE
-// ========================================
 let currentUser = null;
 let allBookings = [];
 let filteredBookings = [];
 
-// ========================================
-// INITIALIZATION
-// ========================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // Initialize mobile menu
+
     initMobileMenu();
     
-    // Initialize header scroll effect
     initHeaderScrollEffect();
     
-    // Check authentication
     checkAuth();
     
-    // Initialize user menu
     initializeUserMenu();
     
-    // Load user bookings
     await loadBookings();
     
-    // Setup event listeners
     setupEventListeners();
     
-    // Initialize theme
     initializeTheme();
 });
 
-// ========================================
-// AUTHENTICATION
-// ========================================
 function checkAuth() {
     const user = localStorage.getItem('user');
     
@@ -131,15 +104,11 @@ function checkAuth() {
     }
 }
 
-// ========================================
-// USER MENU
-// ========================================
 function initializeUserMenu() {
     if (!currentUser) return;
     
     const welcomeMessage = localStorage.getItem('hasLoggedInBefore') === 'true' ? 'Welcome back' : 'Welcome';
     
-    // Desktop user menu
     const userMenuContainer = document.getElementById('userMenuContainer');
     if (userMenuContainer) {
         userMenuContainer.innerHTML = `
@@ -183,7 +152,6 @@ function initializeUserMenu() {
         setupUserMenuListeners();
     }
     
-    // Mobile user menu
     const mobileUserSection = document.getElementById('mobileUserSection');
     if (mobileUserSection) {
         mobileUserSection.innerHTML = `
@@ -247,9 +215,6 @@ function handleSignOut() {
 
 window.handleSignOut = handleSignOut;
 
-// ========================================
-// LOAD BOOKINGS
-// ========================================
 async function loadBookings() {
     try {
         const response = await fetch(`/api/bookings/user/${currentUser.id}`);
@@ -258,7 +223,7 @@ async function loadBookings() {
             allBookings = await response.json();
             filteredBookings = [...allBookings];
             renderBookings();
-            console.log(`✅ Loaded ${allBookings.length} bookings`);
+        
         } else {
             throw new Error('Failed to load bookings');
         }
@@ -268,9 +233,6 @@ async function loadBookings() {
     }
 }
 
-// ========================================
-// RENDER BOOKINGS
-// ========================================
 function renderBookings() {
     const bookingsList = document.getElementById('bookingsList');
     const emptyState = document.getElementById('emptyState');
@@ -314,7 +276,7 @@ function renderBookings() {
                             </div>
                             <div class="booking-info-item">
                                 <i class="fas fa-dollar-sign"></i>
-                                <span>Total: $${booking.totalPrice}</span>
+                                <span>Total: AED ${booking.totalPrice}</span>
                             </div>
                         </div>
                         ${booking.adminNotes ? `
@@ -340,9 +302,6 @@ function renderBookings() {
     }).join('');
 }
 
-// ========================================
-// VIEW BOOKING DETAILS
-// ========================================
 window.viewBookingDetails = function(bookingId) {
     const booking = allBookings.find(b => b._id === bookingId);
     if (!booking) return;
@@ -474,9 +433,6 @@ window.viewBookingDetails = function(bookingId) {
     modal.classList.add('active');
 };
 
-// ========================================
-// CANCEL BOOKING
-// ========================================
 let bookingToCancel = null;
 
 window.cancelBooking = function(bookingId) {
@@ -515,9 +471,6 @@ document.getElementById('confirmCancelBtn')?.addEventListener('click', async () 
     bookingToCancel = null;
 });
 
-// ========================================
-// FILTERS
-// ========================================
 function setupEventListeners() {
     const statusFilter = document.getElementById('statusFilter');
     const sortFilter = document.getElementById('sortFilter');
@@ -555,9 +508,6 @@ function applyFilters() {
     renderBookings();
 }
 
-// ========================================
-// HELPER FUNCTIONS
-// ========================================
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -582,9 +532,6 @@ function closeModal(modalId) {
 
 window.closeModal = closeModal;
 
-// ========================================
-// THEME
-// ========================================
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -600,5 +547,3 @@ function initializeTheme() {
         });
     });
 }
-
-console.log('📋 My Bookings page initialized with modern header');

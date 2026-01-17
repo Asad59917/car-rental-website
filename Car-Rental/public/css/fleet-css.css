@@ -1,15 +1,6 @@
-/* ========================================
-   FLEET PAGE - UPDATED STYLES
-   ======================================== */
-
-/* Page wrapper to account for fixed header */
 body {
     padding-top: 76px;
 }
-
-/* ========================================
-   FLEET HERO SECTION
-   ======================================== */
 .fleet-hero {
     position: relative;
     height: 400px;
@@ -60,9 +51,6 @@ body {
     }
 }
 
-/* ========================================
-   FILTERS SECTION
-   ======================================== */
 .fleet-filters-section {
     background: var(--bg-primary);
     padding: 3rem 0;
@@ -83,7 +71,6 @@ body {
     border: 1px solid var(--border-color);
 }
 
-/* Category Filters */
 .category-filters {
     display: flex;
     gap: 1rem;
@@ -144,7 +131,6 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* Search & Sort */
 .search-sort-wrapper {
     display: flex;
     gap: 1rem;
@@ -204,7 +190,6 @@ body {
     border-color: var(--accent-primary);
 }
 
-/* Price Filter */
 .price-filter {
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
@@ -251,9 +236,6 @@ body {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* ========================================
-   CARS SECTION
-   ======================================== */
 .fleet-cars-section {
     background: var(--bg-primary);
     padding: 4rem 0;
@@ -301,7 +283,6 @@ body {
     color: white;
 }
 
-/* Loading State */
 .loading-state {
     text-align: center;
     padding: 4rem 0;
@@ -321,7 +302,6 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Fleet Grid */
 .fleet-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -332,7 +312,6 @@ body {
     grid-template-columns: 1fr;
 }
 
-/* Car Card - New Design */
 .fleet-car-card {
     background: var(--bg-secondary);
     border-radius: 1.5rem;
@@ -523,7 +502,6 @@ body {
     font-size: 1.125rem;
 }
 
-/* List View Styles */
 .fleet-grid.list-view .fleet-car-card {
     display: grid;
     grid-template-columns: 400px 1fr;
@@ -551,7 +529,6 @@ body {
     max-width: 300px;
 }
 
-/* No Results */
 .no-results {
     text-align: center;
     padding: 4rem 0;
@@ -590,9 +567,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* ========================================
-   CTA SECTION
-   ======================================== */
 .fleet-cta-section {
     background: var(--bg-secondary);
     padding: 5rem 0;
@@ -659,9 +633,6 @@ body {
     transform: translateY(-3px);
 }
 
-/* ========================================
-   CAR MODAL
-   ======================================== */
 .car-modal {
     display: none;
     position: fixed;
@@ -726,9 +697,6 @@ body {
     transform: rotate(90deg);
 }
 
-/* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
 @media (max-width: 1024px) {
     body {
         padding-top: 68px;

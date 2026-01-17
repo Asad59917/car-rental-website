@@ -207,13 +207,13 @@ const carsArray = [
         brand: 'FORD',
         model: 'MUSTANG',
         name: 'Ford Mustang',
-        image: 'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
+        image: 'images/2024_Ford_Mustang.png',
         styling: {
             width: '100%',
             scale: '1',
             marginLeft: '0',
             marginRight: '0',
-            marginTop: '-230px',
+            marginTop: '0px',
             marginBottom: '0',
             padding: '0'
         },
@@ -239,10 +239,10 @@ const carsArray = [
             horsepower: '450'
         },
         gallery: [
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
-            'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e'
+            'images/2024_Ford_Mustang.png',
+            'images/2024_Ford_Mustang.png',
+            'images/2024_Ford_Mustang.png',
+            'images/2024_Ford_Mustang.png'
         ]
     },
     {
@@ -250,13 +250,13 @@ const carsArray = [
         brand: 'AUDI',
         model: 'A3',
         name: 'Audi A3',
-        image: 'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
+        image: 'images/Audi_A3.png',
         styling: {
-            width: '110%',
+            width: '100%',
             scale: '1',
-            marginLeft: '-90px',
-            marginRight: '200px',
-            marginTop: '-110px',
+            marginLeft: '0px',
+            marginRight: '0px',
+            marginTop: '0px',
             marginBottom: '0',
             padding: '0'
         },
@@ -282,10 +282,10 @@ const carsArray = [
             horsepower: '240'
         },
         gallery: [
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
-            'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557'
+            'images/Audi_A3.png',
+            'images/Audi_A3.png',
+            'images/Audi_A3.png',
+            'images/Audi_A3.png'
         ]
     },
     {
@@ -293,13 +293,13 @@ const carsArray = [
         brand: 'LEXUS',
         model: 'LC SERIES',
         name: 'Lexus LC Series',
-        image: 'https://www.figma.com/api/mcp/asset/9ad5e5ca-f5dd-43f6-a06b-ba61121fc9d8',
+        image: 'images/2024_Lexus_LC.png',
         styling: {
             width: '100%',
             scale: '1',
             marginLeft: '0',
             marginRight: '0',
-            marginTop: '-200px',
+            marginTop: '0px',
             marginBottom: '0',
             padding: '0'
         },
@@ -325,10 +325,10 @@ const carsArray = [
             horsepower: '335'
         },
         gallery: [
-            'https://www.figma.com/api/mcp/asset/cf15af61-3975-4919-a235-e3d240d020fa',
-            'https://www.figma.com/api/mcp/asset/b950460d-56da-4f41-8e39-45c0c155e5e5',
-            'https://www.figma.com/api/mcp/asset/4ff17011-8d4b-476f-b923-299c50e3b1bc',
-            'https://www.figma.com/api/mcp/asset/82b4a2a2-6cae-426e-b406-8c949ec746a2'
+            'images/2024_Lexus_LC.png',
+            'images/2024_Lexus_LC.png',
+            'images/2024_Lexus_LC.png',
+            'images/2024_Lexus_LC.png'
         ]
     }
 ];
@@ -362,11 +362,6 @@ const carSlidesWrapper = document.getElementById('carSlidesWrapper');
 const pageControlDots = document.getElementById('pageControlDots');
 const arrowLeft = document.querySelector('.arrow-left');
 const arrowRight = document.querySelector('.arrow-right');
-const detailsBtn = document.querySelector('.details-btn');
-const rentNowBtn = document.querySelector('.rent-now-btn');
-const detailsPage = document.querySelector('.details-page');
-const backButton = document.querySelector('.back-button');
-const rentNowDetailsBtn = document.querySelector('.rent-now-details');
 
 const testimonialNumber = document.getElementById('testimonialNumber');
 const companyBadge = document.querySelector('.badge-text');
@@ -465,7 +460,7 @@ function renderDefaultFeaturedCars() {
             price: 250,
             horsepower: 450,
             seats: 4,
-            image: 'https://www.figma.com/api/mcp/asset/85162a70-b54f-4585-80bd-98137a2a120e',
+            image: 'images/2024_Ford_Mustang.png',
             badge: 'Popular'
         },
         {
@@ -475,7 +470,7 @@ function renderDefaultFeaturedCars() {
             price: 350,
             horsepower: 335,
             seats: 4,
-            image: 'https://www.figma.com/api/mcp/asset/9ad5e5ca-f5dd-43f6-a06b-ba61121fc9d8',
+            image: 'images/2024_Lexus_LC.png',
             badge: 'Luxury'
         },
         {
@@ -485,7 +480,7 @@ function renderDefaultFeaturedCars() {
             price: 180,
             horsepower: 240,
             seats: 5,
-            image: 'https://www.figma.com/api/mcp/asset/70450f8f-74b2-4d23-85d4-4fc248d6e557',
+            image: 'images/Audi_A3.png',
             badge: 'New'
         }
     ];
@@ -609,28 +604,6 @@ function updateSlider() {
 
     dots.forEach((dot, index) => {
         dot.classList.toggle('active', index === currentSlide);
-    });
-
-    updateDetailsPage();
-}
-
-function updateDetailsPage() {
-    if (!detailsPage) return;
-    
-    const currentCar = carsArray[currentSlide];
-    
-    const specValues = detailsPage.querySelectorAll('.spec-value');
-    if (specValues.length >= 3) {
-        specValues[0].textContent = currentCar.specs.gas;
-        specValues[1].textContent = currentCar.specs.seats;
-        specValues[2].textContent = currentCar.specs.horsepower;
-    }
-
-    const galleryImages = detailsPage.querySelectorAll('.gallery-image img');
-    currentCar.gallery.forEach((img, index) => {
-        if (galleryImages[index]) {
-            galleryImages[index].src = img;
-        }
     });
 }
 
@@ -781,34 +754,9 @@ function setupEventListeners() {
     }
 
     document.addEventListener('keydown', (e) => {
-        if (detailsPage && detailsPage.classList.contains('active')) return;
         if (e.key === 'ArrowLeft') prevSlide();
         if (e.key === 'ArrowRight') nextSlide();
     });
-
-    if (detailsBtn) {
-        detailsBtn.addEventListener('click', () => {
-            detailsPage.classList.add('active');
-        });
-    }
-
-    if (backButton) {
-        backButton.addEventListener('click', () => {
-            detailsPage.classList.remove('active');
-        });
-    }
-
-    if (rentNowBtn) {
-        rentNowBtn.addEventListener('click', () => {
-            alert(`Rent ${carsArray[currentSlide].name} - Coming soon!`);
-        });
-    }
-
-    if (rentNowDetailsBtn) {
-        rentNowDetailsBtn.addEventListener('click', () => {
-            alert(`Rent ${carsArray[currentSlide].name} - Coming soon!`);
-        });
-    }
 
     const slidesWrapper = document.querySelector('.slides-wrapper');
     if (slidesWrapper) {
@@ -909,7 +857,6 @@ function init() {
     animateOnScroll();
 
     setupEventListeners();
-
 }
 
 if (document.readyState === 'loading') {

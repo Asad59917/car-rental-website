@@ -1,17 +1,10 @@
-/* ========================================
-   RESET & BASE STYLES
-   ======================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ========================================
-   THEME VARIABLES
-   ======================================== */
 :root {
-    /* Light Theme Colors */
     --bg-primary: #e3e3e3;
     --bg-secondary: #f5f5f5;
     --bg-card: #ffffff;
@@ -29,7 +22,6 @@
 }
 
 [data-theme="dark"] {
-    /* Dark Theme Colors */
     --bg-primary: #0f0f0f;
     --bg-secondary: #1a1a1a;
     --bg-card: #1e1e1e;
@@ -55,9 +47,6 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ========================================
-   CONTAINER
-   ======================================== */
 .container {
     width: 100%;
     max-width: 1280px;
@@ -69,9 +58,6 @@ body {
     overflow: visible;
 }
 
-/* ========================================
-   HEADER
-   ======================================== */
 .header {
     position: absolute;
     top: 39px;
@@ -96,7 +82,6 @@ body {
     gap: 20px;
 }
 
-/* Theme Toggle Button */
 .theme-toggle {
     position: relative;
     width: 50px;
@@ -151,7 +136,6 @@ body {
     transform: rotate(0deg) scale(1);
 }
 
-/* Ripple effect on click */
 .theme-toggle::before {
     content: '';
     position: absolute;
@@ -170,7 +154,6 @@ body {
     transition: 0s;
 }
 
-/* Sign In Button */
 .btn-signin {
     display: flex;
     align-items: center;
@@ -267,9 +250,6 @@ body {
     width: 100%;
 }
 
-/* ========================================
-   CAR NAMES SECTION
-   ======================================== */
 .car-names-container {
     position: absolute;
     left: 50%;
@@ -337,9 +317,6 @@ body {
     font-size: var(--model-font-size-active, 180px);
 }
 
-/* ========================================
-   SLIDES CONTAINER
-   ======================================== */
 .slides-wrapper {
     position: absolute;
     left: calc(12.5% + 26px);
@@ -374,9 +351,6 @@ body {
     transform: scale(var(--img-scale, 1));
 }
 
-/* ========================================
-   BUTTONS
-   ======================================== */
 .buttons {
     position: absolute;
     left: 50%;
@@ -428,9 +402,6 @@ body {
     width: 100%;
 }
 
-/* ========================================
-   PAGE CONTROL
-   ======================================== */
 .page-control {
     position: absolute;
     left: 50%;
@@ -457,9 +428,6 @@ body {
     transform: scale(1.2);
 }
 
-/* ========================================
-   NAVIGATION ARROWS
-   ======================================== */
 .nav-arrows {
     position: absolute;
     left: 66px;
@@ -499,9 +467,6 @@ body {
     fill: none;
 }
 
-/* ========================================
-   SOCIAL ICONS
-   ======================================== */
 .social-icons {
     position: absolute;
     left: 80px;
@@ -525,9 +490,6 @@ body {
     transform: scale(1.1);
 }
 
-/* ========================================
-   DETAILS PAGE
-   ======================================== */
 .details-page {
     position: absolute;
     inset: 0;
@@ -680,9 +642,6 @@ body {
     box-shadow: 0 8px 20px rgba(120, 0, 13, 0.3);
 }
 
-/* ========================================
-   SCROLL ANIMATION SECTION
-   ======================================== */
 .scroll-animation-section {
     width: 100%;
     margin: 0 auto;
@@ -768,9 +727,6 @@ body {
     border-radius: 1rem;
 }
 
-/* ========================================
-   FEATURED CARS SECTION - UPDATED
-   ======================================== */
 .featured-cars-section {
     background: var(--bg-secondary);
     padding: 100px 20px;
@@ -946,9 +902,6 @@ body {
     font-size: 1.125rem;
 }
 
-/* ========================================
-   FEATURES SECTION
-   ======================================== */
 .features-section {
     background: var(--bg-secondary);
     padding: 120px 20px;
@@ -1031,9 +984,6 @@ body {
     line-height: 1.6;
 }
 
-/* ========================================
-   TESTIMONIALS SECTION
-   ======================================== */
 .testimonials-section {
     background: var(--bg-primary);
     padding: 120px 20px;
@@ -1265,9 +1215,6 @@ body {
     opacity: 1;
 }
 
-/* ========================================
-   CTA SECTION
-   ======================================== */
 .cta-section {
     position: relative;
     background: #314559;
@@ -1352,9 +1299,6 @@ body {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
-/* ========================================
-   FOOTER
-   ======================================== */
 .footer {
     background: #1a1a1a;
     color: #e0e0e0;
@@ -1446,9 +1390,6 @@ body {
     color: white;
 }
 
-/* ========================================
-   ANIMATIONS
-   ======================================== */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -1504,9 +1445,6 @@ body {
     animation: fadeIn 0.6s ease-in;
 }
 
-/* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
 @media (max-width: 1280px) {
     .container {
         width: 100%;
@@ -2096,10 +2034,6 @@ body {
     }
 }
 
-/* ========================================
-   USER MENU STYLES
-   ======================================== */
-
 .user-menu-container {
     position: relative;
 }
@@ -2161,7 +2095,6 @@ body {
     transform: translateY(2px);
 }
 
-/* User Dropdown */
 .user-dropdown {
     position: absolute;
     top: calc(100% + 10px);
@@ -2269,7 +2202,6 @@ body {
     flex: 1;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .btn-user-menu {
         padding: 8px 14px;

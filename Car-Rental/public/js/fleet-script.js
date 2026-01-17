@@ -1,12 +1,3 @@
-/**
- * FLEET PAGE - MAIN SCRIPT (UPDATED)
- * Dynamic car loading with filters, search, categories, and mobile menu
- */
-
-// ========================================
-// MOBILE MENU MODULE
-// ========================================
-
 function initMobileMenu() {
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const mobileNav = document.getElementById('mobileNav');
@@ -68,10 +59,6 @@ function initMobileMenu() {
     });
 }
 
-// ========================================
-// HEADER SCROLL EFFECT
-// ========================================
-
 function initHeaderScrollEffect() {
     const header = document.querySelector('.modern-header');
     if (!header) return;
@@ -91,9 +78,6 @@ function initHeaderScrollEffect() {
     });
 }
 
-// ========================================
-// STATE MANAGEMENT
-// ========================================
 let allCars = [];
 let filteredCars = [];
 let currentCategory = 'all';
@@ -101,9 +85,6 @@ let currentView = 'grid';
 let minPriceValue = 0;
 let maxPriceValue = 1000;
 
-// ========================================
-// DOM ELEMENTS
-// ========================================
 const elements = {
     fleetGrid: document.getElementById('fleetGrid'),
     loadingState: document.getElementById('loadingState'),
@@ -121,9 +102,6 @@ const elements = {
     signinBtn: document.getElementById('signinBtn')
 };
 
-// ========================================
-// CATEGORY MAPPING
-// ========================================
 const categoryMapping = {
     'Ford Mustang': 'sports',
     'Mustang': 'sports',
@@ -143,9 +121,6 @@ const categoryMapping = {
     'Rolls Royce': 'luxury'
 };
 
-// ========================================
-// LOAD CARS FROM DATABASE
-// ========================================
 async function loadCars() {
     try {
         showLoading(true);
@@ -167,7 +142,6 @@ async function loadCars() {
             renderCars();
             showLoading(false);
             
-            console.log(`✅ Loaded ${allCars.length} cars from database`);
         } else {
             console.error('Failed to load cars');
             showLoading(false);
@@ -180,9 +154,6 @@ async function loadCars() {
     }
 }
 
-// ========================================
-// DETECT CAR CATEGORY
-// ========================================
 function detectCarCategory(car) {
     const searchText = `${car.brand} ${car.model}`.toLowerCase();
     
@@ -199,9 +170,6 @@ function detectCarCategory(car) {
     return 'sedan';
 }
 
-// ========================================
-// RENDER CARS
-// ========================================
 function renderCars() {
     if (filteredCars.length === 0) {
         showNoResults();
@@ -250,9 +218,6 @@ function renderCars() {
     updateResultsCount();
 }
 
-// ========================================
-// FILTER FUNCTIONS
-// ========================================
 function applyFilters() {
     filteredCars = allCars.filter(car => {
         if (currentCategory !== 'all' && car.category !== currentCategory) {
@@ -299,9 +264,6 @@ function applySorting() {
     });
 }
 
-// ========================================
-// CATEGORY COUNTS
-// ========================================
 function updateCategoryCounts() {
     const counts = {
         all: allCars.length,
@@ -330,9 +292,6 @@ function updateResultsCount() {
     elements.resultsCount.textContent = filteredCars.length;
 }
 
-// ========================================
-// UI HELPER FUNCTIONS
-// ========================================
 function showLoading(show) {
     elements.loadingState.style.display = show ? 'block' : 'none';
     elements.fleetGrid.style.display = show ? 'none' : 'grid';
@@ -349,9 +308,6 @@ function hideNoResults() {
     elements.fleetGrid.style.display = 'grid';
 }
 
-// ========================================
-// RESET FILTERS
-// ========================================
 function resetFilters() {
     currentCategory = 'all';
     minPriceValue = 0;
@@ -373,9 +329,6 @@ function resetFilters() {
 
 window.resetFilters = resetFilters;
 
-// ========================================
-// CAR MODAL
-// ========================================
 function openCarModal(carId) {
     const car = allCars.find(c => (c._id || c.id) === carId);
     if (!car) return;
@@ -430,13 +383,9 @@ function closeCarModal() {
 window.openCarModal = openCarModal;
 window.closeCarModal = closeCarModal;
 
-// ========================================
-// BOOKING FUNCTION
-// ========================================
 function bookCar(event, carId) {
     if (event) event.stopPropagation();
     
-    console.log('🚗 Fleet bookCar called with ID:', carId);
     
     const user = localStorage.getItem('user');
     
@@ -447,15 +396,11 @@ function bookCar(event, carId) {
     }
     
     localStorage.setItem('selectedCar', carId);
-    console.log('✅ Redirecting to booking page...');
     window.location.href = '/booking.html';
 }
 
 window.bookCar = bookCar;
 
-// ========================================
-// THEME TOGGLE
-// ========================================
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -472,9 +417,6 @@ function initializeTheme() {
     });
 }
 
-// ========================================
-// USER AUTHENTICATION
-// ========================================
 function checkUserAuthentication() {
     const user = JSON.parse(localStorage.getItem('user'));
     const signinBtn = document.getElementById('signinBtn');
@@ -602,9 +544,6 @@ function updateNavigationLinks() {
     }
 }
 
-// ========================================
-// EVENT LISTENERS
-// ========================================
 function setupEventListeners() {
     elements.categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -668,9 +607,6 @@ function setupEventListeners() {
     });
 }
 
-// ========================================
-// INITIALIZATION
-// ========================================
 async function init() {
     initMobileMenu();
     initHeaderScrollEffect();
@@ -679,7 +615,7 @@ async function init() {
     setupEventListeners();
     await loadCars();
     
-    console.log('🚗 Fleet page initialized with modern header');
+    
 }
 
 if (document.readyState === 'loading') {
@@ -687,5 +623,3 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
-
-console.log('✅ Fleet-script.js updates applied!');
